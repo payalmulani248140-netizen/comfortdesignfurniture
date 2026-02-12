@@ -1,0 +1,451 @@
+{% doc %}
+  @prompt
+    Add a new "header overlap" option to the existing sticky header settings in the header section. This should create an additional setting that allows the header to overlap content below it, similar to how sticky headers work but with an overlapping visual effect. Include the necessary CSS and liquid code to make this header overlap functionality work properly.
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-header-overlay-{{ ai_gen_id }} {
+    position: relative;
+    z-index: 10;
+    background-color: {{ block.settings.background_color }};
+    backdrop-filter: blur({{ block.settings.blur_amount }}px);
+    -webkit-backdrop-filter: blur({{ block.settings.blur_amount }}px);
+    border-bottom: {{ block.settings.border_thickness }}px solid {{ block.settings.border_color }};
+    transition: all 0.3s ease;
+  }
+
+  .ai-header-overlay-{{ ai_gen_id }}.sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: 0 2px {{ block.settings.shadow_blur }}px rgba(0, 0, 0, {{ block.settings.shadow_opacity | divided_by: 100.0 }});
+  }
+
+  .ai-header-overlay-{{ ai_gen_id }}.overlap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+  }
+
+  .ai-header-overlay-content-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: {{ block.settings.padding_vertical }}px {{ block.settings.padding_horizontal }}px;
+    max-width: {{ settings.page_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-header-overlay-logo-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+  }
+
+  .ai-header-overlay-logo-{{ ai_gen_id }} img {
+    height: {{ block.settings.logo_height }}px;
+    width: auto;
+  }
+
+  .ai-header-overlay-logo-placeholder-{{ ai_gen_id }} {
+    height: {{ block.settings.logo_height }}px;
+    width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-header-overlay-logo-placeholder-{{ ai_gen_id }} svg {
+    height: 100%;
+    width: auto;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-header-overlay-nav-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: {{ block.settings.nav_spacing }}px;
+  }
+
+  .ai-header-overlay-nav-{{ ai_gen_id }} a {
+    color: {{ block.settings.text_color }};
+    text-decoration: none;
+    font-size: {{ block.settings.nav_font_size }}px;
+    font-weight: {{ block.settings.nav_font_weight }};
+    transition: color 0.3s ease;
+  }
+
+  .ai-header-overlay-nav-{{ ai_gen_id }} a:hover {
+    color: {{ block.settings.text_hover_color }};
+  }
+
+  .ai-header-overlay-actions-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .ai-header-overlay-button-{{ ai_gen_id }} {
+    background-color: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    padding: 12px 24px;
+    border: none;
+    border-radius: {{ block.settings.button_radius }}px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+
+  .ai-header-overlay-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_color }};
+  }
+
+  .ai-header-overlay-spacer-{{ ai_gen_id }} {
+    height: {{ block.settings.padding_vertical | times: 2 | plus: block.settings.logo_height }}px;
+    display: none;
+  }
+
+  .ai-header-overlay-{{ ai_gen_id }}.sticky + .ai-header-overlay-spacer-{{ ai_gen_id }} {
+    display: block;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-header-overlay-nav-{{ ai_gen_id }} {
+      display: none;
+    }
+    
+    .ai-header-overlay-content-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_vertical | times: 0.7 }}px {{ block.settings.padding_horizontal | times: 0.7 }}px;
+    }
+    
+    .ai-header-overlay-logo-{{ ai_gen_id }} img,
+    .ai-header-overlay-logo-placeholder-{{ ai_gen_id }} {
+      height: {{ block.settings.logo_height | times: 0.8 }}px;
+    }
+  }
+{% endstyle %}
+
+<header-overlay-{{ ai_gen_id }}
+  class="ai-header-overlay-{{ ai_gen_id }} {% if block.settings.enable_overlap %}overlap{% endif %}"
+  data-sticky="{{ block.settings.enable_sticky }}"
+  data-overlap="{{ block.settings.enable_overlap }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-header-overlay-content-{{ ai_gen_id }}">
+    <div class="ai-header-overlay-logo-{{ ai_gen_id }}">
+      {% if block.settings.logo %}
+        <img
+          src="{{ block.settings.logo | image_url: height: block.settings.logo_height | times: 2 }}"
+          alt="{{ shop.name }}"
+          height="{{ block.settings.logo_height }}"
+          loading="lazy"
+        >
+      {% else %}
+        <div class="ai-header-overlay-logo-placeholder-{{ ai_gen_id }}">
+          {{ 'image' | placeholder_svg_tag }}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if block.settings.show_navigation %}
+      <nav class="ai-header-overlay-nav-{{ ai_gen_id }}">
+        {% for link in linklists[block.settings.menu].links %}
+          <a href="{{ link.url }}">{{ link.title }}</a>
+        {% endfor %}
+      </nav>
+    {% endif %}
+
+    <div class="ai-header-overlay-actions-{{ ai_gen_id }}">
+      {% if block.settings.button_text != blank %}
+        <a
+          href="{{ block.settings.button_link }}"
+          class="ai-header-overlay-button-{{ ai_gen_id }}"
+        >
+          {{ block.settings.button_text }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</header-overlay-{{ ai_gen_id }}>
+
+<div class="ai-header-overlay-spacer-{{ ai_gen_id }}"></div>
+
+<script>
+  (function() {
+    class HeaderOverlay{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.isSticky = this.dataset.sticky === 'true';
+        this.isOverlap = this.dataset.overlap === 'true';
+        this.spacer = this.nextElementSibling;
+      }
+
+      connectedCallback() {
+        if (this.isSticky) {
+          this.setupStickyBehavior();
+        }
+      }
+
+      setupStickyBehavior() {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                this.classList.remove('sticky');
+              } else {
+                this.classList.add('sticky');
+              }
+            });
+          },
+          {
+            threshold: 0,
+            rootMargin: '-1px 0px 0px 0px'
+          }
+        );
+
+        const sentinel = document.createElement('div');
+        sentinel.style.height = '1px';
+        sentinel.style.position = 'absolute';
+        sentinel.style.top = '0';
+        sentinel.style.left = '0';
+        sentinel.style.width = '100%';
+        sentinel.style.pointerEvents = 'none';
+        
+        this.parentNode.insertBefore(sentinel, this);
+        observer.observe(sentinel);
+      }
+    }
+
+    customElements.define('header-overlay-{{ ai_gen_id }}', HeaderOverlay{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Header Overlay",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Behavior"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "Enable sticky header",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_overlap",
+      "label": "Enable header overlap",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "min": 20,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Logo height",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show navigation",
+      "default": true
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu"
+    },
+    {
+      "type": "range",
+      "id": "nav_font_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Navigation font size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "nav_font_weight",
+      "min": 300,
+      "max": 700,
+      "step": 100,
+      "label": "Navigation font weight",
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "nav_spacing",
+      "min": 16,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "label": "Navigation spacing",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "rgba(255, 255, 255, 0.9)"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_hover_color",
+      "label": "Text hover color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "rgba(0, 0, 0, 0.1)"
+    },
+    {
+      "type": "range",
+      "id": "border_thickness",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border thickness",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "blur_amount",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Background blur",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "shadow_opacity",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "%",
+      "label": "Shadow opacity",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "shadow_blur",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Shadow blur",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Vertical padding",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 16,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header Overlay"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}

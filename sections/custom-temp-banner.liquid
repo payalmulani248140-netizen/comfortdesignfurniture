@@ -1,0 +1,257 @@
+{% style %}
+.multi-layout-section {
+    display: grid;
+    grid-template-columns: calc(50% - 15px) calc(25% - 15px) calc(25% - 15px);
+    gap: 15px;
+    padding-top: 40px;
+}
+
+.multi-layout-column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* BIG LEFT IMAGE — fills full height */
+.column-big img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+/* MIDDLE COLUMN — EXACT 2 IMAGES, EACH 50% HEIGHT */
+.column-two {
+  height: 100%;
+}
+.column-two .item {
+  flex: 1 1 50%;
+}
+.column-two img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+/* RIGHT COLUMN — EXACT 3 IMAGES */
+.column-three {
+  height: 100%;
+}
+.column-three .item {
+  flex: 1 1 calc(100% / 3);
+}
+.column-three img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+/* BUTTON POSITIONING */
+.button-wrap {
+  position: absolute;
+  z-index: 3;
+}
+
+.btn {
+  padding: 10px 18px;
+  background: #fff;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* Wrapper for images */
+.image-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Button Positions */
+.pos-top-left { top:10px; left:10px; }
+.pos-top-center { top:10px; left:50%; transform:translateX(-50%); }
+.pos-top-right { top:10px; right:10px; }
+
+.pos-center-left { top:50%; left:10px; transform:translateY(-50%); }
+.pos-center-center { top:50%; left:50%; transform:translate(-50%, -50%); }
+.pos-center-right { top:50%; right:10px; transform:translateY(-50%); }
+
+.pos-bottom-left { bottom:10px; left:10px; }
+.pos-bottom-center { bottom:10px; left:50%; transform:translateX(-50%); }
+.pos-bottom-right { bottom:10px; right:10px; }
+
+/* Responsive */
+@media(max-width: 768px) {
+  .multi-layout-section {
+    grid-template-columns: 1fr;
+  }
+}
+{% endstyle %}
+
+<section class="multi-layout-section page-width" style="--radius: {{ section.settings.radius }}px">
+
+  <!-- LEFT BIG IMAGE -->
+  <div class="multi-layout-column column-big">
+    <div class="image-card">
+      <img src="{{ section.settings.big_image | image_url }}" alt="">
+      {% if section.settings.big_button_text != blank %}
+        <div class="button-wrap {{ section.settings.big_button_position }}">
+          <a href="{{ section.settings.big_button_link }}" class="btn">{{ section.settings.big_button_text }}</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- MIDDLE 2 IMAGES -->
+  <div class="multi-layout-column column-two">
+    {% for block in section.blocks %}
+      {% if block.type == 'two_images' %}
+      <div class="item">
+        <div class="image-card">
+          <img src="{{ block.settings.image | image_url }}" alt="">
+          {% if block.settings.btn_text != blank %}
+            <div class="button-wrap {{ block.settings.position }}">
+              <a href="{{ block.settings.btn_link }}" class="btn">{{ block.settings.btn_text }}</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <!-- RIGHT 3 IMAGES -->
+  <div class="multi-layout-column column-three">
+    {% for block in section.blocks %}
+      {% if block.type == 'three_images' %}
+      <div class="item">
+        <div class="image-card">
+          <img src="{{ block.settings.image | image_url }}" alt="">
+          {% if block.settings.btn_text != blank %}
+            <div class="button-wrap {{ block.settings.position }}">
+              <a href="{{ block.settings.btn_link }}" class="btn">{{ block.settings.btn_text }}</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</section>
+{% schema %}
+{
+  "name": "Multi Layout Banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "big_image",
+      "label": "Left Big Image"
+    },
+    {
+      "type": "text",
+      "id": "big_button_text",
+      "label": "Big Image Button Text"
+    },
+    {
+      "type": "url",
+      "id": "big_button_link",
+      "label": "Big Image Button Link"
+    },
+    {
+      "type": "select",
+      "id": "big_button_position",
+      "label": "Big Button Position",
+      "default": "pos-center-center",
+      "options": [
+        { "value": "pos-top-left", "label": "Top Left" },
+        { "value": "pos-top-center", "label": "Top Center" },
+        { "value": "pos-top-right", "label": "Top Right" },
+
+        { "value": "pos-center-left", "label": "Center Left" },
+        { "value": "pos-center-center", "label": "Center Center" },
+        { "value": "pos-center-right", "label": "Center Right" },
+
+        { "value": "pos-bottom-left", "label": "Bottom Left" },
+        { "value": "pos-bottom-center", "label": "Bottom Center" },
+        { "value": "pos-bottom-right", "label": "Bottom Right" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Image Border Radius",
+      "default": 10,
+      "min": 0,
+      "max": 50,
+      "step": 1
+    }
+  ],
+
+  "blocks": [
+    {
+      "type": "two_images",
+      "name": "Custom Temp Banner",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "btn_text", "label": "Button Text" },
+        { "type": "url", "id": "btn_link", "label": "Button Link" },
+        {
+          "type": "select",
+          "id": "position",
+          "label": "Button Position",
+          "default": "pos-center-center",
+          "options": [
+            { "value": "pos-top-left", "label": "Top Left" },
+            { "value": "pos-top-center", "label": "Top Center" },
+            { "value": "pos-top-right", "label": "Top Right" },
+
+            { "value": "pos-center-left", "label": "Center Left" },
+            { "value": "pos-center-center", "label": "Center Center" },
+            { "value": "pos-center-right", "label": "Center Right" },
+
+            { "value": "pos-bottom-left", "label": "Bottom Left" },
+            { "value": "pos-bottom-center", "label": "Bottom Center" },
+            { "value": "pos-bottom-right", "label": "Bottom Right" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "three_images",
+      "name": "Right Column Image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "btn_text", "label": "Button Text" },
+        { "type": "url", "id": "btn_link", "label": "Button Link" },
+        {
+          "type": "select",
+          "id": "position",
+          "label": "Button Position",
+          "default": "pos-center-center",
+          "options": [
+            { "value": "pos-top-left", "label": "Top Left" },
+            { "value": "pos-top-center", "label": "Top Center" },
+            { "value": "pos-top-right", "label": "Top Right" },
+
+            { "value": "pos-center-left", "label": "Center Left" },
+            { "value": "pos-center-center", "label": "Center Center" },
+            { "value": "pos-center-right", "label": "Center Right" },
+
+            { "value": "pos-bottom-left", "label": "Bottom Left" },
+            { "value": "pos-bottom-center", "label": "Bottom Center" },
+            { "value": "pos-bottom-right", "label": "Bottom Right" }
+          ]
+        }
+      ]
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Custom Temp Banner"
+    }
+  ]
+}
+{% endschema %}

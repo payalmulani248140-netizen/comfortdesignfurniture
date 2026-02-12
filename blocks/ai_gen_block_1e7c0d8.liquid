@@ -1,0 +1,122 @@
+{% doc %}
+  @prompt
+    Create CSS code to completely hide all sale badges with class names like .badge, .sale-badge, .product-badge, .badge--sale on collection and product card pages while preserving all price displays
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% if block.settings.hide_sale_badges %}
+  {% style %}
+    .ai-badge-hider-{{ ai_gen_id }} {
+      display: none !important;
+    }
+
+    /* Target common sale badge selectors */
+    .badge,
+    .sale-badge,
+    .product-badge,
+    .badge--sale,
+    .badge-sale,
+    .product-badge--sale,
+    .card__badge,
+    .card-badge,
+    .product-card__badge,
+    .product__badge,
+    .collection-card__badge,
+    [class*="badge"][class*="sale"],
+    [class*="sale-badge"],
+    [data-badge*="sale"],
+    .price__badge,
+    .price-badge {
+      display: none !important;
+      visibility: hidden !important;
+    }
+
+    /* Ensure price displays remain visible */
+    .price,
+    .product-price,
+    .card__price,
+    .product-card__price,
+    .price-item,
+    .price__regular,
+    .price__sale,
+    .money,
+    [class*="price"]:not([class*="badge"]) {
+      display: block !important;
+      visibility: visible !important;
+    }
+
+    /* Additional targeting for specific badge patterns */
+    .badge[class*="percent"],
+    .badge[class*="discount"],
+    .badge[class*="off"],
+    .product-badge[class*="percent"],
+    .product-badge[class*="discount"],
+    .product-badge[class*="off"] {
+      display: none !important;
+      visibility: hidden !important;
+    }
+  {% endstyle %}
+{% endif %}
+
+<div 
+  class="ai-custom-css-block-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  {% if block.settings.show_status %}
+    <div class="ai-css-status-{{ ai_gen_id }}">
+      {% if block.settings.hide_sale_badges %}
+        <p style="color: {{ block.settings.status_color }}; font-size: 14px; padding: 10px; background: #f0f0f0; border-radius: 4px; margin: 0;">✓ Sale badges are currently hidden
+        </p>
+      {% else %}
+        <p style="color: #666; font-size: 14px; padding: 10px; background: #f9f9f9; border-radius: 4px; margin: 0;">
+          Sale badges are currently visible
+        </p>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Hide sale badges",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Badge visibility"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_sale_badges",
+      "label": "Hide all sale badges",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "This will hide sale badges across your store while preserving all price displays. Common badge classes are targeted including .badge, .sale-badge, .product-badge, and .badge--sale."
+    },
+    {
+      "type": "header",
+      "content": "Status display"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_status",
+      "label": "Show status message",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "status_color",
+      "label": "Status text color",
+      "default": "#008060"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hide sale badges"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}

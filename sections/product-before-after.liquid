@@ -1,0 +1,298 @@
+{%- style -%}
+  .image_gap_container {
+    display: grid;
+    place-content: center;
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
+    --position: 50%;
+  }
+
+.image-container {
+    width: 100%;
+    height: 500px;
+}
+
+  
+
+.slider-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+ .image-before {
+    /* inset: 0;
+    filter: grayscale(100%); */
+    clip-path: polygon(0 0, var(--position) 0, var(--position) 100%, 0% 100%);
+    z-index: 1;
+}
+
+  .image_gap_container .slider {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    opacity: 0;
+    /* for Firefox */
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  
+
+  .image_gap_container .slider:focus-visible ~ .slider-button {
+    outline: 5px solid black;
+    outline-offset: 3px;
+  }
+
+  .image_gap_container .slider-line {
+    position: absolute;
+    inset: 0;
+    width: 0.2rem;
+    height: 100%;
+    background-color: #fff;
+    /* z-index: 10; */
+    left: var(--position);
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .product-before-after .slider-button {
+    position: absolute;
+    background-color: #fff !important;
+    color: black;
+    padding: 0.5rem;
+    border-radius: 100vw;
+    display: grid;
+    place-items: center;
+    top: 50%;
+    left: var(--position);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    /* z-index: 100; */
+        z-index: 7;
+    box-shadow: 1px 1px 1px hsl(0, 50%, 2%, 0.5);
+  }
+
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+
+{% assign product_before_after_image = product.metafields.custom.product_before_after_image.value %}
+
+{%- assign before_image = product_before_after_image.before_image | image_url -%}
+{%- assign after_image = product_before_after_image.after_image | image_url -%}
+
+
+{% if template.name == 'collection' %}
+  {% assign product_before_after_image = collection.metafields.custom.product_before_after_image.value %}
+
+{%- assign before_image = product_before_after_image.before_image | image_url -%}
+{%- assign after_image = product_before_after_image.after_image | image_url -%}
+{% endif %}
+
+
+{% if before_image != "" %}
+<div class="product-before-after multirow section-{{ section.id }}-padding gradient color-{{ section.settings.section_color_scheme }}">
+  <div class="multirow__inner page-width">
+    <div
+      class="{{ padding_class }}"
+      {{ block.shopify_attributes }}
+    >
+      <div class="image-with-text__grid grid grid--gapless grid--1-col grid--{% if section.settings.desktop_image_width == 'medium' %}2-col-tablet{% else %}3-col-tablet{% endif %}{% if section.settings.image_layout contains 'alternate' %}{% cycle odd_class, even_class %}{% else %}{{ odd_class }}{% endif %}">
+        <div class="image-with-text__media-item image-with-text__media-item--{{ section.settings.desktop_image_width }} image-with-text__media-item--{{ section.settings.desktop_content_position }} grid__item">
+         
+            <div class="image_gap_container">
+              <div class="image-container">
+                <img
+                  srcset="
+                    {%- if before_image.width >= 350 -%}{{ before_image | image_url: width: 350 }} 350w,{%- endif -%}
+                    {%- if before_image.width >= 550 -%}{{ before_image | image_url: width: 550 }} 550w,{%- endif -%}
+                    {%- if before_image.width >= 750 -%}{{ before_image | image_url: width: 750 }} 750w,{%- endif -%}
+                    {%- if before_image.width >= 991 -%}{{ before_image | image_url: width: 991 }} 991w,{%- endif -%}
+                    {%- if before_image.width >= 1200 -%}{{ before_image | image_url: width: 1200 }} 1200w,{%- endif -%}
+                    {%- if before_image.width >= 2000 -%}{{ before_image | image_url: width: 2000 }} 1500w,{%- endif -%}
+                    {{ before_image }} {{ before_image.width }}w
+                  "
+                  src="{{ before_image }}"
+                  loading="lazy"
+                  sizes="(min-width: 992px)2000px, 100vw"
+                  alt="{{ heading }}"
+                  width="800px"
+                  height="800px"
+                  class="image-before slider-image"
+                >
+
+                <img
+                  srcset="
+                    {%- if after_image.width >= 350 -%}{{ after_image | image_url: width: 350 }} 350w,{%- endif -%}
+                    {%- if after_image.width >= 550 -%}{{ after_image | image_url: width: 550 }} 550w,{%- endif -%}
+                    {%- if after_image.width >= 750 -%}{{ after_image | image_url: width: 750 }} 750w,{%- endif -%}
+                    {%- if after_image.width >= 991 -%}{{ after_image | image_url: width: 991 }} 991w,{%- endif -%}
+                    {%- if after_image.width >= 1200 -%}{{ after_image | image_url: width: 1200 }} 1200w,{%- endif -%}
+                    {%- if after_image.width >= 1500 -%}{{ after_image | image_url: width: 1500 }} 1500w,{%- endif -%}
+                    {{ after_image }} {{ after_image.width }}w
+                  "
+                  src="{{ after_image }}"
+                  loading="lazy"
+                  sizes="(min-width: 992px)2000px, 100vw"
+                  alt="{{ heading }}"
+                  width="800px"
+                  height="800px"
+                  class="image-after slider-image"
+                >
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value="50"
+                aria-label="Percentage of before photo shown"
+                class="slider"
+              >
+              <div class="slider-line" aria-hidden="true" style="display: block;"></div>
+              <div class="slider-button" aria-hidden="true">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="30"
+                  height="30"
+                  fill="currentColor"
+                  viewBox="0 0 256 256"
+                >
+                  <rect width="256" height="256" fill="none"></rect>
+                  <!-- <line
+                    x1="128"
+                    y1="40"
+                    x2="128"
+                    y2="216"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="16"
+                  ></line> -->
+                  <line
+                    x1="96"
+                    y1="128"
+                    x2="16"
+                    y2="128"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="16"
+                  ></line>
+                  <polyline
+                    points="48 160 16 128 48 96"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="16"
+                  ></polyline>
+                  <line
+                    x1="160"
+                    y1="128"
+                    x2="240"
+                    y2="128"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="16"
+                  ></line>
+                  <polyline
+                    points="208 96 240 128 208 160"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="16"
+                  ></polyline>
+                </svg>
+              </div>
+            </div>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+  const imagecontainer = document.querySelector('.product-before-after .image-container');
+  const sliderImage = document.querySelector('.product-before-after .slider-image.image-before');
+
+  if (imagecontainer && sliderImage) {
+
+    imagecontainer.style.height = sliderImage.getAttribute('height');
+  }
+});
+
+
+  const container = document.querySelector('.image_gap_container');
+document.querySelector('.slider').addEventListener('input', (e) => {
+  container.style.setProperty('--position', `${e.target.value}%`);
+})
+</script>
+
+{% endif %}
+{% schema %}
+{
+  "name": "Product before after",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Product before after"
+    }
+  ]
+}
+{% endschema %}

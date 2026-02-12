@@ -1,0 +1,174 @@
+{% stylesheet %}
+.custom-newsletter-section {
+  padding: 0px 0;
+  background: var(--newsletter-bg);
+}
+
+.custom-newsletter-box {
+  background: #000;
+  border-radius: 12px;
+  padding: 40px 30px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  color: #fff;
+}
+
+.custom-newsletter-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+.custom-newsletter-header svg {
+      width: 36px;
+    height: 36px;
+  fill: #fff;
+}
+
+.custom-newsletter-header h2 {
+  font-size: 36px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.custom-newsletter-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px !important;
+  flex-direction: row !important;
+}
+
+.custom-newsletter-form input {
+  background: #4e4e4e;
+  border: none;
+  outline: none;
+  color: #fff;
+  border-radius: 50px;
+  padding: 12px 20px;
+  flex: 1 1 250px;
+  font-size: 14px;
+}
+
+.custom-newsletter-form input::placeholder {
+  color: #bbb;
+}
+
+.custom-newsletter-form button {
+  background: var(--newsletter-btn-bg);
+  border: none;
+  border-radius: 50px;
+  padding: 12px 30px;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.3s;
+}
+
+.custom-newsletter-form button:hover {
+  filter: brightness(1.1);
+}
+
+.custom-newsletter-form button svg {
+  width: 14px;
+  height: 14px;
+  fill: #fff;
+}
+
+@media (max-width: 768px) {
+  .custom-newsletter-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .custom-newsletter-form input, 
+  .custom-newsletter-form button {
+    width: 100%;
+  }
+}
+{% endstylesheet %}
+
+<section class="custom-newsletter-section" style="
+  --newsletter-bg: {{ section.settings.bg_color }};
+  --newsletter-box-bg: {{ section.settings.box_bg }};
+  --newsletter-btn-bg: {{ section.settings.button_color }};
+">
+  <div class="custom-newsletter-box">
+    <div class="custom-newsletter-header">
+      {% if section.settings.show_icon %}
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 64H48C21.5 64 0 85.5 0 112v288c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48zM48 96h416c8.8 0 16 7.2 16 16v8.7l-224 135L32 120.7V112c0-8.8 7.2-16 16-16zm416 320H48c-8.8 0-16-7.2-16-16V168.4l216.4 130.7a16 16 0 0 0 16.3 0L480 168.4V400c0 8.8-7.2 16-16 16z"/></svg>
+      {% endif %}
+      <h2>{{ section.settings.heading }}</h2>
+    </div>
+
+    <form class="custom-newsletter-form" method="post" action="{{ routes.newsletter_subscribe_url }}">
+      <input type="text" name="contact[name]" placeholder="Enter your name" required>
+      <input type="email" name="contact[email]" placeholder="Enter your email" required>
+      <button type="submit">
+        {{ section.settings.button_label }}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3L173.3 416.9c-12.3 12.3-32.4 12.5-44.9.3l-83.9-80c-13-12.4-13.2-32.6-.3-45.2s32.6-13.2 45.2-.3l61 58.2L393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
+      </button>
+    </form>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Custom Newsletter",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading text",
+      "default": "Unlock exclusive updates & offers!"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Submit"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show mail icon",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "box_bg",
+      "label": "Box background color",
+      "default": "rgba(0,0,0,0.8)"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#ff3b00"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Newsletter"
+    }
+  ]
+}
+{% endschema %}

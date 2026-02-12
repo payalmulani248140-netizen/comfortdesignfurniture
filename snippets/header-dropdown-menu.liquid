@@ -1,0 +1,179 @@
+{% comment %}
+  Renders dropdown + megamenu
+{% endcomment %}
+
+<nav class="header__inline-menu">
+  <ul class="list-menu list-menu--inline" role="list">
+
+    {%- for link in section.settings.menu.links -%}
+
+      {%- assign mega_block = blank -%}
+      {%- for b in section.blocks -%}
+        {%- if b.settings.menu_title == link.title -%}
+          {%- assign mega_block = b -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      <li class="{%if link.title contains 'Cyber Monday Sale' %}link-cyber-monday-sale{% endif %}  {% if link.active %}child-active-menu{% endif %} {% if mega_block != blank %}MegaMenuWrapper{% endif %}"  {%if link.title contains 'Cyber Monday Sale' %}style="--btn-text:{{settings.btn_text }};--btn-bg:{{settings.btn_bg }}"{% endif %}>
+
+        {%- if mega_block != blank -%}
+
+          <header-menu>
+            <details id="MegaMenu-{{ forloop.index }}">
+              <summary
+                class="header__menu-item list-menu__item link focus-inset"
+                data-href="{{ link.url }}"
+              >
+                <span>{{ link.title }}</span>
+                {{ 'icon-caret.svg' | inline_asset_content }}
+              </summary>
+
+              <div class="mega-menu-wrapper-main">
+              <div class="page-width">
+              <div class="mega-menu-wrapper">
+                <div class="mm-menu">
+                  <ul>
+                  {%- for childlink in link.links -%}
+                      <li>
+                        <h5><a href="{{ childlink.url }}"> {{ childlink.title }}</a>
+                        </h5>
+                        <ul class="grandchildlink_mega">
+                        {%- for grandchildlink in childlink.links -%}
+                          <li><a href="{{ grandchildlink.url }}"> {{ grandchildlink.title }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </li>
+                  {% endfor %}
+                  </ul>
+                </div>
+                <div class="mega-menu-grid">
+
+                  {%- if mega_block.settings.select_collection != blank -%}
+                    <div class="mega-col">
+                      {% assign col = mega_block.settings.select_collection %}
+                         <a href="{{ col.url }}">
+                            <img src="{{ col.image.src | image_url }}"
+                            {% if forloop.index != 1 %}
+                            loading="lazy"
+                            {% else %}
+                            preload="true" fetchpriority="high"
+                            {% endif %}
+                            data-variant-title="{{ image.alt | escape }}"
+                            sizes="(min-width: 768px) 150px, 10px"
+                            alt="{{ col.image.alt | default: product.title | escape }}"
+                            width="{{ col.image.src.width }}"
+                            height="{{ col.image.src.width | divided_by: col.image.src.aspect_ratio | round }}"
+                            class="img-fluid"
+                            >
+                            <div class="mm-hd mt-2">{{ col.title }}</div>
+                        </a>  
+                    </div>
+                  {%- endif -%}
+
+                  {%- if mega_block.settings.select_collection_second != blank -%}
+                    <div class="mega-col">
+                      {% assign col2 = mega_block.settings.select_collection_second %}
+                         <a href="{{ col2.url }}">
+                            <img
+                            src="{{ col2.image.src | image_url }}"
+                            {% if forloop.index != 1 %}
+                            loading="lazy"
+                            {% else %}
+                            preload="true" fetchpriority="high"
+                            {% endif %}
+                            data-variant-title="{{ col2.image.alt | escape }}"
+                            sizes="(min-width: 768px) 150px, 10px"
+                            alt="{{ col2.image.alt | default: product.title | escape }}"
+                            width="{{ col2.image.src.width }}"
+                            height="{{ col2.image.src.width | divided_by: col2.image.src.aspect_ratio | round }}"
+                            class="img-fluid"
+                            >
+                      <div class="mm-hd mt-2">{{ col2.title }}</div>
+
+                      </a>  
+                 
+
+                  
+                    </div>
+                  {%- endif -%}
+
+                </div>
+              </div>
+              </div>
+              </div>
+
+            </details>
+          </header-menu>
+
+        {%- elsif link.links != blank -%}
+
+          <header-menu>
+            <details id="Details-HeaderMenu-{{ forloop.index }}">
+              <summary
+                class="header__menu-item list-menu__item link focus-inset"
+                data-href="{{ link.url }}"
+              >
+                <span>{{ link.title }}</span>
+                {{ 'icon-caret.svg' | inline_asset_content }}
+              </summary>
+
+              <ul
+                class="header__submenu list-menu list-menu--disclosure color-{{ section.settings.menu_color_scheme }} gradient caption-large"
+                role="list"
+              >
+                {%- for childlink in link.links -%}
+                  <li>
+
+                    {%- if childlink.links == blank -%}
+                      <a
+                        href="{{ childlink.url }}"
+                        class="header__menu-item list-menu__item link link--text caption-large"
+                      >
+                        {{ childlink.title }}
+                      </a>
+
+                    {%- else -%}
+                      <details>
+                        <summary class="header__menu-item link link--text list-menu__item caption-large">
+                          <span>{{ childlink.title }}</span>
+                          {{ 'icon-caret.svg' | inline_asset_content }}
+                        </summary>
+
+                        <ul class="header__submenu list-menu motion-reduce">
+                          {%- for grandchildlink in childlink.links -%}
+                            <li>
+                              <a
+                                href="{{ grandchildlink.url }}"
+                                class="header__menu-item list-menu__item link link--text caption-large"
+                              >
+                                {{ grandchildlink.title }}
+                              </a>
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      </details>
+                    {%- endif -%}
+
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </details>
+          </header-menu>
+
+        {%- else -%}
+
+          <a
+            href="{{ link.url }}"
+            class="header__menu-item list-menu__item link link--text focus-inset"
+          >
+            <span>{{ link.title }}</span>
+          </a>
+
+        {%- endif -%}
+
+      </li>
+
+    {%- endfor -%}
+
+  </ul>
+</nav>

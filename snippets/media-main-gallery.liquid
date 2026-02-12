@@ -1,0 +1,57 @@
+ <div
+                        class="swiper-slide d-flex align-items-center product--media"
+                        data-mediaID="{{ media.id }}"
+                        role="treeitem"
+                      >
+                        {% if media.media_type == 'image' %}
+                          {% assign image = media %}
+
+                          <a href="{{ image.src | image_url}}"  class="MagicZoom 11">
+                            <img
+                              srcset="
+                                {%- if image.src.width >= 350 -%}{{ image.src | image_url: width: 350 }} 350w,{%- endif -%}
+                                {%- if image.src.width >= 550 -%}{{ image.src | image_url: width: 550 }} 550w,{%- endif -%}
+                                {%- if image.src.width >= 750 -%}{{ image.src | image_url: width: 750 }} 750w,{%- endif -%}
+                                {%- if image.src.width >= 991 -%}{{ image.src | image_url: width: 991 }} 991w,{%- endif -%}
+                                {%- if image.src.width >= 1200 -%}{{ image.src | image_url: width: 1200 }} 1200w,{%- endif -%}
+                                {%- if image.src.width >= 1500 -%}{{ image.src | image_url: width: 1500 }} 1500w,{%- endif -%}
+                                {{ image.src | image_url }} {{ image.src.width }}w
+                              "
+                              src="{{ image.src | image_url }}"
+                              {% if forloop.index != 1 %}
+                                loading="lazy"
+                              {% else %}
+                                preload="true" fetchpriority="high"
+                              {% endif %}
+                              data-variant-title="{{ image.alt | escape }}"
+                              sizes="(min-width: {{ settings.container_width }})  740px ,(min-width: 992px)  calc(50vw - 100px) , calc(100vw - 40px)"
+                              alt="{{ image.alt | escape }}"
+                              width="{{ image.src.width }}"
+                              height="{{ image.src.width | divided_by: image.src.aspect_ratio | round }}"
+                              class="image-magnify-hover  {% if zoom_image_type == 'in_image_block' %} image-magnify-hover {% endif %}"
+                            >
+                          </a>
+                        {% elsif media.media_type == 'external_video' or media.media_type == 'video' %}
+                            {%- case media.media_type -%}
+                                {%- when 'external_video' -%}
+                                  {%- assign video_class = 'js-' | append: media.host -%}
+                                  {%- if media.host == 'youtube' -%}
+                                    {{
+                                      media
+                                      | external_video_url: autoplay: true, loop: loop, playlist: media.external_id
+                                      | external_video_tag: class: video_class, loading: 'lazy'
+                                    }}
+                                  {%- else -%}
+                                    {{
+                                      media
+                                      | external_video_url: autoplay: true, loop: loop
+                                      | external_video_tag: class: video_class, loading: 'lazy'
+                                    }}
+                                  {%- endif -%}
+                                {%- when 'video' -%}
+                                  {{ media | media_tag: image_size: '2048x', autoplay: true, loop: loop, controls: true, preload: 'none' }}
+                                {%- when 'model' -%}
+                                  {{ media | media_tag: image_size: '2048x', toggleable: true }}
+                            {%- endcase -%}
+                        {% endif %}
+                      </div>

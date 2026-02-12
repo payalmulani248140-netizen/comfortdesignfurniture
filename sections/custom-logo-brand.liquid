@@ -1,0 +1,95 @@
+<!-- sections/brand-slider.liquid -->
+<section class="brand-slider-section">
+  <div class="page-width">
+    <!-- Section Heading -->
+    {% if section.settings.heading != blank %}
+      <h2 class="brand-slider-heading image_link_heading rte inline-richtext h1 scroll-trigger animate--slide-in">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    <!-- Section Subtitle -->
+    {% if section.settings.subtitle != blank %}
+      <p class="brand-slider-subtitle">{{ section.settings.subtitle }}</p>
+    {% endif %}
+
+    <!-- Slider Wrapper -->
+    <div class="brand-slider swiper">
+      <div class="swiper-wrapper">
+        {% for block in section.blocks %}
+          <div class="swiper-slide">
+            <div class="brand-card">
+              {% if block.settings.logo != blank %}
+                <div class="brand-logo">
+                  <img src="{{ block.settings.logo | image_url: width: 200 }}" alt="{{ block.settings.name }}">
+                  {% if block.settings.link != blank %}
+                  {% endif %}
+                </div>
+              {% endif %}
+              <h3 class="brand-name">{{ block.settings.name }}</h3>
+              <p class="brand-subheading">{{ block.settings.subheading }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Slider Dots -->
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Brand Slider",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "We partner with the world’s most prestigious furniture brands to bring you exceptional quality and design"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Section Subtitle",
+      "default": "Experience premium quality from trusted brands"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Brand",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Brand Logo"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Brand Name",
+          "default": "Brand Name"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Brand Subheading",
+          "default": "Subheading text"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Brand Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand Slider",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
+ 

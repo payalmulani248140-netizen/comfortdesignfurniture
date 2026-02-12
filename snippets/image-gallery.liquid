@@ -1,0 +1,80 @@
+{% if media.media_type == 'image' %}
+    {% assign image = media %}
+    <div
+    class="swiper-slide product-thumb--image"
+    data-index="{{ forloop.index }}"
+    data-mediaID="{{ image.id }}"
+    role="treeitem"
+    >
+    <img
+        srcset="
+        {%- if image.src.width >= 10 -%}{{ image.src | image_url: width: 10 }} 10w,{%- endif -%}
+        {%- if image.src.width >= 100 -%}{{ image.src | image_url: width: 100 }} 100w,{%- endif -%}
+        {%- if image.src.width >= 150 -%}{{ image.src | image_url: width: 150 }} 150w,{%- endif -%}
+        "
+        src="{{ image.src | image_url }}"
+        {% if forloop.index != 1 %}
+        loading="lazy"
+        {% else %}
+        preload="true" fetchpriority="high"
+        {% endif %}
+        data-variant-title="{{ image.alt | escape }}"
+        sizes="(min-width: 768px) 150px, 10px"
+        alt="{{ image.alt | default: product.title | escape }}"
+        width="{{ image.src.width }}"
+        height="{{ image.src.width | divided_by: image.src.aspect_ratio | round }}"
+        class="img-fluid"
+    >
+    </div>
+{% elsif media.media_type == 'external_video' or media.media_type == 'video' %}
+    <div
+    class="swiper-slide product-thumb--image media--video"
+    data-index="{{ forloop.index }}"
+    data-mediaID="{{ media.id }}"
+    role="treeitem"
+    >
+    {% comment %}
+        <img class="img-fluid"
+        src="{{ media.preview_image.src | image_url }}"
+        srcset="{{ media.preview_image.src | image_url: width: 250 }}"
+        sizes="250px"
+        loading="lazy"
+        width="{{ media.preview_image.width }}"
+        height="{{ media.preview_image.width | divided_by: media.preview_image.aspect_ratio | round }}"
+        alt="{{ media.alt | default: product.title | escape }}"/>
+    {% endcomment %}
+
+    <img
+        srcset="
+        {%- if media.preview_image.src.width >= 10 -%}{{ media.preview_image.src | image_url: width: 10 }} 10w,{%- endif -%}
+        {%- if media.preview_image.src.width >= 100 -%}{{ media.preview_image.src | image_url: width: 100 }} 100w,{%- endif -%}
+        {%- if media.preview_image.src.width >= 150 -%}{{ media.preview_image.src | image_url: width: 150 }} 150w,{%- endif -%}
+        {{ media.preview_image.src | image_url }} {{ media.preview_image.src.width }}w
+        "
+        src="{{ media.preview_image.src | image_url: width: 50 }}"
+        {% if forloop.index != 1 %}
+        loading="lazy"
+        {% else %}
+        preload="true" fetchpriority="high"
+        {% endif %}
+        data-variant-title="{{ image.alt | escape }}"
+        sizes="(min-width: 768px) 150px, 10px"
+        alt="{{ image.alt | default: product.title | escape }}"
+        width="{{ media.preview_image.src.width }}"
+        height="{{ media.preview_image.src.width | divided_by: media.preview_image.src.aspect_ratio | round }}"
+        class="img-fluid"
+    >
+
+    <span class="icon-play position-absolute">
+        <svg
+        width="15"
+        height="17"
+        viewBox="0 0 15 17"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        >
+        <path d="M13.5 6.76795C14.8333 7.53775 14.8333 9.46225 13.5 10.2321L3 16.2942C1.66667 17.064 -8.1311e-07 16.1018 -7.45811e-07 14.5622L-2.15839e-07 2.43782C-1.48541e-07 0.898222 1.66667 -0.0640296 3 0.705771L13.5 6.76795Z" fill="currentcolor"></path>
+        </svg>
+    </span>
+    </div>
+{% endif %}

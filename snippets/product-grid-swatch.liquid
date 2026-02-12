@@ -1,0 +1,22 @@
+{% if product.options_by_name['Color'] or product.options_by_name['color']  or product.options_by_name['Upholstery Color']  %}
+    
+  <div class="card-swatch-list">
+    {% assign seen_colors = '' %}
+
+    {% for variant in product.variants %}
+      {% if variant.available %}
+        {% assign color_value = variant.option1 %}
+
+
+        {%- unless seen_colors contains color_value -%}
+            
+          {% render 'color-swatch', option: 'Color', value: color_value %}
+          {% assign seen_colors = seen_colors | append: color_value | append: ',' %}
+        {%- endunless -%}
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+   

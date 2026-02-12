@@ -1,0 +1,66 @@
+{% assign words = collection.metafields.custom.short_description.value %}
+{% assign word_limit = 200 %}
+
+<div class="collection-description-wrapper page-width mt-4">
+  {% if words.size > word_limit %}
+    <div class="collection-description short">{{ words | slice: 0, word_limit | join: ' ' }}...</div>
+    <div class="collection-description full" style="display: none;">
+      {{ words }}
+    </div>
+    <button class="read-more-toggle">Read more</button>
+  {% else %}
+    <div class="collection-description">
+      {{ words }}
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  .collection-description {
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .collection-description.short {
+    /* Optional styling for preview */
+    color: #444;
+  }
+
+  .read-more-toggle {
+    background: none;
+    border: none;
+    color: #007acc;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 10px;
+    padding: 0;
+  }
+
+  .read-more-toggle:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.querySelector(".read-more-toggle");
+    const shortDesc = document.querySelector(".collection-description.short");
+    const fullDesc = document.querySelector(".collection-description.full");
+
+    if (!toggleBtn || !shortDesc || !fullDesc) return;
+
+    toggleBtn.addEventListener("click", function () {
+      const isExpanded = fullDesc.style.display === "block";
+
+      if (isExpanded) {
+        fullDesc.style.display = "none";
+        shortDesc.style.display = "block";
+        toggleBtn.textContent = "Read more";
+      } else {
+        fullDesc.style.display = "block";
+        shortDesc.style.display = "none";
+        toggleBtn.textContent = "Read less";
+      }
+    });
+  });
+</script>

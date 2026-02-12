@@ -1,0 +1,33 @@
+{%- comment -%}
+  Color swatch renderer
+  Usage: {% render 'color-swatch', option: 'Color', value: 'Red' %}
+{%- endcomment -%}
+
+{% comment %} {%- assign color_handle = value | handleize -%} {% endcomment %}
+{%- assign color_handle = value  | replace: ' ', '_' -%}
+{%- assign swatch_image = color_handle | append: '.png' -%}
+
+<span 
+  class="color-swatch" 
+  title="{{ value }}" 
+  style="
+    background-color: {{ value | escape }};
+    background-image: url({{ swatch_image | file_url }});
+  ">
+</span>
+
+
+
+<style>
+    .color-swatch {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background-size: cover;
+  background-position: center;
+  margin: 2px;
+  cursor: pointer;
+}
+</style>

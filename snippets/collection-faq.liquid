@@ -1,0 +1,86 @@
+<div class="page-width pb-md-13 pb-10">
+  {% if collection.metafields.custom.faq_list != blank %}
+    <div class="collection-faq">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-list">
+        {% for faq in collection.metafields.custom.faq_list.value %}
+          <div class="faq-item">
+            <div class="faq-question">
+              <h3>{{ faq.question }}</h3>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>{{ faq.answer }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  .collection-faq {
+    max-width: 1100px;
+    margin: 0 auto;
+    font-family: sans-serif;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid #ddd;
+    padding: 15px 0;
+  }
+
+  .faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .faq-question h3 {
+    margin: 0;
+    font-size: 1.1em;
+    flex: 1;
+  }
+
+  .faq-toggle {
+    font-size: 1.5em;
+    margin-left: 15px;
+    transition: transform 0.3s ease;
+  }
+
+  .faq-answer {
+    display: none;
+    padding-top: 10px;
+  }
+
+  .faq-item.active .faq-answer {
+    display: block;
+  }
+
+  .faq-item.active .faq-toggle {
+    transform: rotate(0deg); /* Visually changes + to × (close icon) */
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.faq-question').forEach((question) => {
+    question.addEventListener('click', () => {
+      const item = question.parentElement;
+      const isActive = item.classList.contains('active');
+
+      // Collapse all
+      document.querySelectorAll('.faq-item').forEach(i => {
+        i.classList.remove('active');
+        i.querySelector('.faq-toggle').textContent = '+';
+      });
+
+      // Toggle clicked one
+      if (!isActive) {
+        item.classList.add('active');
+        question.querySelector('.faq-toggle').textContent = '–';
+      }
+    });
+  });
+</script>

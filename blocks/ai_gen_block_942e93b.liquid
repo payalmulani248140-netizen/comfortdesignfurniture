@@ -1,0 +1,363 @@
+{% doc %}
+  @prompt
+    Hide the sale badge on collection & product pages while keeping both the original price and sale price visible on product cards
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-hide-sale-badge-{{ ai_gen_id }} {
+    display: block;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .badge {
+    display: none !important;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .badge--sale {
+    display: none !important;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .card__badge {
+    display: none !important;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .card__badge--sale {
+    display: none !important;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .product-badge {
+    display: none !important;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .product-badge--sale {
+    display: none !important;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .sale-badge {
+    display: none !important;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} [class*="badge"][class*="sale"] {
+    display: none !important;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} [data-badge="sale"] {
+    display: none !important;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .price__sale {
+    display: block !important;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .price__regular {
+    display: block !important;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .price--on-sale .price__regular {
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .price--on-sale .price__sale {
+    color: {{ block.settings.sale_price_color }};
+    font-weight: 600;
+  }
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .card__information .price {
+    display: flex;
+    flex-direction: {{ block.settings.price_layout }};
+    gap: 8px;
+    align-items: center;
+  }
+
+  {% if block.settings.price_layout == 'column' %}
+    .ai-hide-sale-badge-{{ ai_gen_id }} .card__information .price {
+      align-items: flex-start;
+    }
+  {% endif %}
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .price__container {
+    display: flex;
+    flex-direction: {{ block.settings.price_layout }};
+    gap: 8px;
+    align-items: center;
+  }
+
+  {% if block.settings.price_layout == 'column' %}
+    .ai-hide-sale-badge-{{ ai_gen_id }} .price__container {
+      align-items: flex-start;
+    }
+  {% endif %}
+
+  .ai-hide-sale-badge-{{ ai_gen_id }} .product-form__price {
+    display: flex;
+    flex-direction: {{ block.settings.price_layout }};
+    gap: 8px;
+    align-items: center;
+  }
+
+  {% if block.settings.price_layout == 'column' %}
+    .ai-hide-sale-badge-{{ ai_gen_id }} .product-form__price {
+      align-items: flex-start;
+    }
+  {% endif %}
+
+  {% if block.settings.show_savings_amount %}
+    .ai-hide-sale-badge-{{ ai_gen_id }} .price--on-sale::after {
+      content: "Save " attr(data-savings);background-color: {{ block.settings.savings_bg_color }};
+      color: {{ block.settings.savings_text_color }};
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-left: 8px;
+    }
+  {% endif %}
+
+  {% if block.settings.show_percentage_off %}
+    .ai-hide-sale-badge-{{ ai_gen_id }} .price--on-sale::before {
+      content: attr(data-percentage) "% off";
+      background-color: {{ block.settings.percentage_bg_color }};
+      color: {{ block.settings.percentage_text_color }};
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-right: 8px;
+    }
+  {% endif %}
+
+  {% if template.name == 'collection' or template.name == 'search' %}
+    .ai-hide-sale-badge-{{ ai_gen_id }} {
+      display: block;
+    }
+  {% endif %}
+
+  {% if template.name == 'product' %}
+    .ai-hide-sale-badge-{{ ai_gen_id }} {
+      display: block;
+    }
+  {% endif %}
+
+  @media screen and (max-width: 749px) {
+    .ai-hide-sale-badge-{{ ai_gen_id }} .card__information .price {
+      flex-direction: column;
+      align-items: flex-start;gap: 4px;
+    }
+
+    .ai-hide-sale-badge-{{ ai_gen_id }} .price__container {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .ai-hide-sale-badge-{{ ai_gen_id }} .product-form__price {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+  }
+{% endstyle %}<hide-sale-badges-{{ ai_gen_id }}
+  class="ai-hide-sale-badge-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  {% if block.settings.show_info_message %}
+    <div class="ai-hide-sale-badge-info-{{ ai_gen_id }}" style="
+      background-color: {{ block.settings.info_bg_color }};
+      color: {{ block.settings.info_text_color }};
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      text-align: center;
+    ">
+      {{ block.settings.info_message }}
+    </div>
+  {% endif %}</hide-sale-badges-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class HideSaleBadges{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.initializePriceCalculations();
+        this.observePriceChanges();
+      }
+
+      initializePriceCalculations() {
+        const priceElements = document.querySelectorAll('.price--on-sale');
+        
+        priceElements.forEach(priceElement => {
+          this.calculateSavings(priceElement);
+        });
+      }
+
+      calculateSavings(priceElement) {
+        const regularPriceEl = priceElement.querySelector('.price__regular');
+        const salePriceEl = priceElement.querySelector('.price__sale');
+        
+        if (regularPriceEl && salePriceEl) {
+          const regularPrice = this.extractPrice(regularPriceEl.textContent);
+          const salePrice = this.extractPrice(salePriceEl.textContent);
+          
+          if (regularPrice && salePrice && regularPrice > salePrice) {
+            const savings = regularPrice - salePrice;
+            const percentage = Math.round(((regularPrice - salePrice) / regularPrice) * 100);
+            
+            priceElement.setAttribute('data-savings', this.formatPrice(savings));
+            priceElement.setAttribute('data-percentage', percentage);
+          }
+        }
+      }
+
+      extractPrice(priceText) {
+        const cleanPrice = priceText.replace(/[^\d.,]/g, '').replace(',', '.');
+        return parseFloat(cleanPrice);
+      }
+
+      formatPrice(amount) {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD'
+        }).format(amount);
+      }
+
+      observePriceChanges() {
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (mutation.type === 'childList') {
+              const addedNodes = Array.from(mutation.addedNodes);
+              addedNodes.forEach(node => {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                  const priceElements = node.querySelectorAll ? node.querySelectorAll('.price--on-sale') : [];
+                  priceElements.forEach(priceElement => {
+                    this.calculateSavings(priceElement);
+                  });
+                }
+              });
+            }
+          });
+        });
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+      }
+    }
+
+    customElements.define('hide-sale-badges-{{ ai_gen_id }}', HideSaleBadges{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Hide sale badges",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Price display"
+    },
+    {
+      "type": "select",
+      "id": "price_layout",
+      "label": "Price layout",
+      "options": [
+        {
+          "value": "row",
+          "label": "Horizontal"
+        },
+        {
+          "value": "column",
+          "label": "Vertical"
+        }
+      ],
+      "default": "row"
+    },
+    {
+      "type": "color",
+      "id": "sale_price_color",
+      "label": "Sale price color",
+      "default": "#d82c0d"
+    },
+    {
+      "type": "header",
+      "content": "Savings display"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_savings_amount",
+      "label": "Show savings amount",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "savings_bg_color",
+      "label": "Savings background color",
+      "default": "#008060"
+    },
+    {
+      "type": "color",
+      "id": "savings_text_color",
+      "label": "Savings text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_percentage_off",
+      "label": "Show percentage off",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "percentage_bg_color",
+      "label": "Percentage background color",
+      "default": "#ff6b35"
+    },
+    {
+      "type": "color",
+      "id": "percentage_text_color",
+      "label": "Percentage text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Information message"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_info_message",
+      "label": "Show information message",
+      "default": false
+    },
+    {
+      "type": "richtext",
+      "id": "info_message",
+      "label": "Message",
+      "default": "<p>Sale badges are hidden but sale prices are still displayed.</p>"
+    },
+    {
+      "type": "color",
+      "id": "info_bg_color",
+      "label": "Message background color",
+      "default": "#f0f8ff"
+    },
+    {
+      "type": "color",
+      "id": "info_text_color",
+      "label": "Message text color",
+      "default": "#1a1a1a"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hide sale badges"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}

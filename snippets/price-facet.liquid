@@ -1,0 +1,151 @@
+<price-range class="price-slider">
+
+  <div class="slider">
+    <div class="track"></div>
+    <div class="range-fill"></div>
+
+    {% assign raw_max = filter.range_max | money_without_currency | replace: ',', '' %}
+    {% assign rounded_max = raw_max | divided_by: 1000 | ceil | times: 1000 %}
+
+
+    <!-- MIN SLIDER -->
+    <input 
+      type="range"
+      class="thumb thumb-min"
+      name="{{ filter.min_value.param_name }}"
+      min="0"
+      max="{{ rounded_max }}"
+      value="{{ filter.min_value.value | default: 0 | money_without_currency | replace: ',', '' }}"
+      step="1"
+    />
+
+    <!-- MAX SLIDER -->
+    <input 
+      type="range"
+      class="thumb thumb-max"
+      name="{{ filter.max_value.param_name }}"
+      min="0"
+      max="{{ rounded_max }}"
+      value="{{ filter.max_value.value | default: raw_max }}"
+      step="1"
+    />
+
+  </div>
+
+  <!-- BUBBLES -->
+  <output class="bubble bubble-min"></output>
+  <output class="bubble bubble-max"></output>
+
+  <!-- INPUT BOXES -->
+  <div class="price-inputs">
+<span class="field-currency">{{ cart.currency.symbol }}</span>
+
+    <div class="input-wrap">
+      <label>Min</label>
+      <input type="number" class="input-min" min="0">
+    </div>
+
+    <div class="input-wrap">
+      <label>Max</label>
+      <input type="number" class="input-max" min="0">
+    </div>
+  </div>
+
+</price-range>
+
+
+
+<style>
+.price-slider-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.slider {
+  position: relative;
+  height: 6px;
+}
+
+.track,
+.range-fill {
+  position: absolute;
+  height: 6px;
+  border-radius: 3px;
+  display: block !important;
+}
+
+.track {
+  width: 100%;
+  background: #d5d5d5;
+  z-index: 1;
+}
+
+.range-fill {
+  background: #ff460f;
+  z-index: 2;
+}
+
+.thumb {
+  -webkit-appearance: none;
+  position: absolute;
+  width: 100%;
+  height: 6px;
+  background: none;
+  pointer-events: none;
+  outline: none;
+  z-index: 3;
+}
+
+.thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: #ff460f;
+  pointer-events: auto;
+  cursor: pointer;
+  position: relative;
+}
+
+.thumb::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: #ff460f;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.bubble {
+  {% comment %} position: absolute;
+  top: -35px;
+  background: #000;
+  color: #fff;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 5; {% endcomment %}
+}
+.price-inputs {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.price-inputs .input-wrap {
+  width: 48%;
+}
+
+.price-inputs input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+</style>

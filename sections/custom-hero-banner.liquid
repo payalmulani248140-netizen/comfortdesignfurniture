@@ -1,0 +1,141 @@
+<section class="custom-banner" style="background-image: url({{ section.settings.background_image | image_url }});">
+  <div class="custom-banner-content content-{{ section.settings.content_position }} vertical-{{ section.settings.vertical_position }} page-width">
+    
+    <!-- Highlight Badge -->
+    <div class="custom-banner-badge">
+      {{ section.settings.highlight_icon }}
+      <span>{{ section.settings.highlight_text }}</span>
+    </div>
+
+    <!-- Title + Subtitle -->
+    <h2 class="custom-banner-title">
+      {{ section.settings.banner_title }}
+      <span>{{ section.settings.banner_subtitle }}</span>
+    </h2>
+
+    <!-- Description -->
+    <p class="custom-banner-description">{{ section.settings.banner_description }}</p>
+
+    <!-- Button -->
+    <a href="{{ section.settings.button_link }}" class="custom-banner-button">
+      {{ section.settings.button_text }}
+      {{ section.settings.button_icon }}
+    </a>
+
+    <!-- Features -->
+    <div class="custom-banner-features">
+      {% if section.settings.feature_1 != blank %}
+        <span>{{ section.settings.feature_1 }}</span>
+      {% endif %}
+      {% if section.settings.feature_2 != blank %}
+        <span>{{ section.settings.feature_2 }}</span>
+      {% endif %}
+      {% if section.settings.feature_3 != blank %}
+        <span>{{ section.settings.feature_3 }}</span>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Custom Banner Section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Horizontal Content Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "vertical_position",
+      "label": "Vertical Content Position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "text",
+      "id": "highlight_text",
+      "label": "Highlight Badge Text",
+      "default": "Premium Collection"
+    },
+    {
+      "type": "html",
+      "id": "highlight_icon",
+      "label": "Highlight Badge SVG"
+    },
+    {
+      "type": "text",
+      "id": "banner_title",
+      "label": "Banner Title",
+      "default": "Luxury"
+    },
+    {
+      "type": "text",
+      "id": "banner_subtitle",
+      "label": "Banner Subtitle",
+      "default": "Redefined"
+    },
+    {
+      "type": "textarea",
+      "id": "banner_description",
+      "label": "Banner Description",
+      "default": "Experience the epitome of comfort and sophistication with our sofa collection."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Explore Collection"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "html",
+      "id": "button_icon",
+      "label": "Button Arrow SVG"
+    },
+    {
+      "type": "text",
+      "id": "feature_1",
+      "label": "Feature 1",
+      "default": "Premium Materials"
+    },
+    {
+      "type": "text",
+      "id": "feature_2",
+      "label": "Feature 2",
+      "default": "White Glove Delivery"
+    },
+    {
+      "type": "text",
+      "id": "feature_3",
+      "label": "Feature 3",
+      "default": "Rich Palette of Fabrics"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Banner Section"
+    }
+  ]
+}
+{% endschema %}

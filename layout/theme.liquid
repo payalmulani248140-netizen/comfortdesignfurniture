@@ -1,0 +1,983 @@
+<!doctype html>
+<html class="js" lang="{{ request.locale.iso_code }}">
+  <head>
+    <!-- Google tag (gtag.js)  Added by Josh on 8/22/2025 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FSQR5GLP8X"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+
+      gtag('config', 'G-FSQR5GLP8X');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="">
+    <link rel="canonical" href="{{ canonical_url }}">
+
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+
+    {%- unless settings.type_header_font.system? and settings.type_body_font.system? -%}
+      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+    {%- endunless -%}
+
+    <title>
+      {{ page_title }}
+      {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    </title>
+
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+
+    {% render 'meta-tags' %}
+
+    {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag: preload: true }}
+
+    <script src="{{ 'constants.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'swiper-slider.js' | asset_url }}"></script>
+
+    <script src="{{ 'details-disclosure.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'details-modal.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'search-form.js' | asset_url }}" defer="defer"></script>
+    <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+    <script src="{{ 'custom.js' | asset_url }}" defer="defer"></script>
+
+    {%- if settings.animations_reveal_on_scroll -%}
+      <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"
+    >
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"
+    >
+
+    <!-- Slick JS -->
+    <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js" defer></script>
+    {{ content_for_header }}
+
+    {%- liquid
+      assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
+      assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
+      assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
+    %}
+
+    {% style %}
+      {{ settings.type_body_font | font_face: font_display: 'swap' }}
+      {{ body_font_bold | font_face: font_display: 'swap' }}
+      {{ body_font_italic | font_face: font_display: 'swap' }}
+      {{ body_font_bold_italic | font_face: font_display: 'swap' }}
+      {{ settings.type_header_font | font_face: font_display: 'swap' }}
+
+      {% for scheme in settings.color_schemes -%}
+        {% assign scheme_classes = scheme_classes | append: ', .color-' | append: scheme.id %}
+        {% if forloop.index == 1 -%}
+          :root,
+        {%- endif %}
+        .color-{{ scheme.id }} {
+          --color-background: {{ scheme.settings.background.red }},{{ scheme.settings.background.green }},{{ scheme.settings.background.blue }};
+        {% if scheme.settings.background_gradient != empty %}
+          --gradient-background: {{ scheme.settings.background_gradient }};
+        {% else %}
+          --gradient-background: {{ scheme.settings.background }};
+        {% endif %}
+
+        {% liquid
+          assign background_color = scheme.settings.background
+          assign background_color_brightness = background_color | color_brightness
+          if background_color_brightness <= 26
+            assign background_color_contrast = background_color | color_lighten: 50
+          elsif background_color_brightness <= 65
+            assign background_color_contrast = background_color | color_lighten: 5
+          else
+            assign background_color_contrast = background_color | color_darken: 25
+          endif
+        %}
+
+        --color-foreground: {{ scheme.settings.text.red }},{{ scheme.settings.text.green }},{{ scheme.settings.text.blue }};
+        --color-background-contrast: {{ background_color_contrast.red }},{{ background_color_contrast.green }},{{ background_color_contrast.blue }};
+        --color-shadow: {{ scheme.settings.shadow.red }},{{ scheme.settings.shadow.green }},{{ scheme.settings.shadow.blue }};
+        --color-button: {{ scheme.settings.button.red }},{{ scheme.settings.button.green }},{{ scheme.settings.button.blue }};
+        --color-button-text: {{ scheme.settings.button_label.red }},{{ scheme.settings.button_label.green }},{{ scheme.settings.button_label.blue }};
+        --color-secondary-button: {{ scheme.settings.background.red }},{{ scheme.settings.background.green }},{{ scheme.settings.background.blue }};
+        --color-secondary-button-text: {{ scheme.settings.secondary_button_label.red }},{{ scheme.settings.secondary_button_label.green }},{{ scheme.settings.secondary_button_label.blue }};
+        --color-link: {{ scheme.settings.secondary_button_label.red }},{{ scheme.settings.secondary_button_label.green }},{{ scheme.settings.secondary_button_label.blue }};
+        --color-badge-foreground: {{ scheme.settings.text.red }},{{ scheme.settings.text.green }},{{ scheme.settings.text.blue }};
+        --color-badge-background: {{ scheme.settings.background.red }},{{ scheme.settings.background.green }},{{ scheme.settings.background.blue }};
+        --color-badge-border: {{ scheme.settings.text.red }},{{ scheme.settings.text.green }},{{ scheme.settings.text.blue }};
+        --payment-terms-background-color: rgb({{ scheme.settings.background.rgb }});
+      }
+      {% endfor %}
+
+      {{ scheme_classes | prepend: 'body' }} {
+        color: rgba(var(--color-foreground));
+        background-color: rgb(var(--color-background));
+      }
+
+      :root {
+        --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+        --font-body-style: {{ settings.type_body_font.style }};
+        --font-body-weight: {{ settings.type_body_font.weight }};
+        --font-body-weight-bold: {{ settings.type_body_font.weight | plus: 300 | at_most: 1000 }};
+
+        --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+        --font-heading-style: {{ settings.type_header_font.style }};
+        --font-heading-weight: {{ settings.type_header_font.weight }};
+
+        --font-body-scale: {{ settings.body_scale | divided_by: 100.0 }};
+        --font-heading-scale: {{ settings.heading_scale | times: 1.0 | divided_by: settings.body_scale }};
+
+        --media-padding: {{ settings.media_padding }}px;
+        --media-border-opacity: {{ settings.media_border_opacity | divided_by: 100.0 }};
+        --media-border-width: {{ settings.media_border_thickness }}px;
+        --media-radius: {{ settings.media_radius }}px;
+        --media-shadow-opacity: {{ settings.media_shadow_opacity | divided_by: 100.0 }};
+        --media-shadow-horizontal-offset: {{ settings.media_shadow_horizontal_offset }}px;
+        --media-shadow-vertical-offset: {{ settings.media_shadow_vertical_offset }}px;
+        --media-shadow-blur-radius: {{ settings.media_shadow_blur }}px;
+        --media-shadow-visible: {% if settings.media_shadow_opacity > 0 %}1{% else %}0{% endif %};
+
+        --page-width: {{ settings.page_width | divided_by: 10 }}rem;
+        /* --page-width: 100%; */
+        --page-width-margin: {% if settings.page_width == '1600' %}2{% else %}0{% endif %}rem;
+
+        --product-card-image-padding: {{ settings.card_image_padding | divided_by: 10.0 }}rem;
+        --product-card-corner-radius: {{ settings.card_corner_radius | divided_by: 10.0 }}rem;
+        --product-card-text-alignment: {{ settings.card_text_alignment }};
+        --product-card-border-width: {{ settings.card_border_thickness | divided_by: 10.0 }}rem;
+        --product-card-border-opacity: {{ settings.card_border_opacity | divided_by: 100.0 }};
+        --product-card-shadow-opacity: {{ settings.card_shadow_opacity | divided_by: 100.0 }};
+        --product-card-shadow-visible: {% if settings.card_shadow_opacity > 0 %}1{% else %}0{% endif %};
+        --product-card-shadow-horizontal-offset: {{ settings.card_shadow_horizontal_offset | divided_by: 10.0 }}rem;
+        --product-card-shadow-vertical-offset: {{ settings.card_shadow_vertical_offset | divided_by: 10.0 }}rem;
+        --product-card-shadow-blur-radius: {{ settings.card_shadow_blur | divided_by: 10.0 }}rem;
+
+        --collection-card-image-padding: {{ settings.collection_card_image_padding | divided_by: 10.0 }}rem;
+        --collection-card-corner-radius: {{ settings.collection_card_corner_radius | divided_by: 10.0 }}rem;
+        --collection-card-text-alignment: {{ settings.collection_card_text_alignment }};
+        --collection-card-border-width: {{ settings.collection_card_border_thickness | divided_by: 10.0 }}rem;
+        --collection-card-border-opacity: {{ settings.collection_card_border_opacity | divided_by: 100.0 }};
+        --collection-card-shadow-opacity: {{ settings.collection_card_shadow_opacity | divided_by: 100.0 }};
+        --collection-card-shadow-visible: {% if settings.collection_card_shadow_opacity > 0 %}1{% else %}0{% endif %};
+        --collection-card-shadow-horizontal-offset: {{ settings.collection_card_shadow_horizontal_offset | divided_by: 10.0 }}rem;
+        --collection-card-shadow-vertical-offset: {{ settings.collection_card_shadow_vertical_offset | divided_by: 10.0 }}rem;
+        --collection-card-shadow-blur-radius: {{ settings.collection_card_shadow_blur | divided_by: 10.0 }}rem;
+
+        --blog-card-image-padding: {{ settings.blog_card_image_padding | divided_by: 10.0 }}rem;
+        --blog-card-corner-radius: {{ settings.blog_card_corner_radius | divided_by: 10.0 }}rem;
+        --blog-card-text-alignment: {{ settings.blog_card_text_alignment }};
+        --blog-card-border-width: {{ settings.blog_card_border_thickness | divided_by: 10.0 }}rem;
+        --blog-card-border-opacity: {{ settings.blog_card_border_opacity | divided_by: 100.0 }};
+        --blog-card-shadow-opacity: {{ settings.blog_card_shadow_opacity | divided_by: 100.0 }};
+        --blog-card-shadow-visible: {% if settings.blog_card_shadow_opacity > 0 %}1{% else %}0{% endif %};
+        --blog-card-shadow-horizontal-offset: {{ settings.blog_card_shadow_horizontal_offset | divided_by: 10.0 }}rem;
+        --blog-card-shadow-vertical-offset: {{ settings.blog_card_shadow_vertical_offset | divided_by: 10.0 }}rem;
+        --blog-card-shadow-blur-radius: {{ settings.blog_card_shadow_blur | divided_by: 10.0 }}rem;
+
+        --badge-corner-radius: {{ settings.badge_corner_radius | divided_by: 10.0 }}rem;
+
+        --popup-border-width: {{ settings.popup_border_thickness }}px;
+        --popup-border-opacity: {{ settings.popup_border_opacity | divided_by: 100.0 }};
+        --popup-corner-radius: {{ settings.popup_corner_radius }}px;
+        --popup-shadow-opacity: {{ settings.popup_shadow_opacity | divided_by: 100.0 }};
+        --popup-shadow-horizontal-offset: {{ settings.popup_shadow_horizontal_offset }}px;
+        --popup-shadow-vertical-offset: {{ settings.popup_shadow_vertical_offset }}px;
+        --popup-shadow-blur-radius: {{ settings.popup_shadow_blur }}px;
+
+        --drawer-border-width: {{ settings.drawer_border_thickness }}px;
+        --drawer-border-opacity: {{ settings.drawer_border_opacity | divided_by: 100.0 }};
+        --drawer-shadow-opacity: {{ settings.drawer_shadow_opacity | divided_by: 100.0 }};
+        --drawer-shadow-horizontal-offset: {{ settings.drawer_shadow_horizontal_offset }}px;
+        --drawer-shadow-vertical-offset: {{ settings.drawer_shadow_vertical_offset }}px;
+        --drawer-shadow-blur-radius: {{ settings.drawer_shadow_blur }}px;
+
+        --spacing-sections-desktop: {{ settings.spacing_sections }}px;
+        --spacing-sections-mobile: {% if settings.spacing_sections < 24 %}{{ settings.spacing_sections }}{% else %}{{ settings.spacing_sections | times: 0.7 | round | at_least: 20 }}{% endif %}px;
+
+        --grid-desktop-vertical-spacing: {{ settings.spacing_grid_vertical }}px;
+        --grid-desktop-horizontal-spacing: {{ settings.spacing_grid_horizontal }}px;
+        --grid-mobile-vertical-spacing: {{ settings.spacing_grid_vertical | divided_by: 2 }}px;
+        --grid-mobile-horizontal-spacing: {{ settings.spacing_grid_horizontal | divided_by: 2 }}px;
+
+        --text-boxes-border-opacity: {{ settings.text_boxes_border_opacity | divided_by: 100.0 }};
+        --text-boxes-border-width: {{ settings.text_boxes_border_thickness }}px;
+        --text-boxes-radius: {{ settings.text_boxes_radius }}px;
+        --text-boxes-shadow-opacity: {{ settings.text_boxes_shadow_opacity | divided_by: 100.0 }};
+        --text-boxes-shadow-visible: {% if settings.text_boxes_shadow_opacity > 0 %}1{% else %}0{% endif %};
+        --text-boxes-shadow-horizontal-offset: {{ settings.text_boxes_shadow_horizontal_offset }}px;
+        --text-boxes-shadow-vertical-offset: {{ settings.text_boxes_shadow_vertical_offset }}px;
+        --text-boxes-shadow-blur-radius: {{ settings.text_boxes_shadow_blur }}px;
+
+        --buttons-radius: {{ settings.buttons_radius }}px;
+        --buttons-radius-outset: {% if settings.buttons_radius > 0 %}{{ settings.buttons_radius | plus: settings.buttons_border_thickness }}{% else %}0{% endif %}px;
+        --buttons-border-width: {% if settings.buttons_border_opacity > 0 %}{{ settings.buttons_border_thickness }}{% else %}0{% endif %}px;
+        --buttons-border-opacity: {{ settings.buttons_border_opacity | divided_by: 100.0 }};
+        --buttons-shadow-opacity: {{ settings.buttons_shadow_opacity | divided_by: 100.0 }};
+        --buttons-shadow-visible: {% if settings.buttons_shadow_opacity > 0 %}1{% else %}0{% endif %};
+        --buttons-shadow-horizontal-offset: {{ settings.buttons_shadow_horizontal_offset }}px;
+        --buttons-shadow-vertical-offset: {{ settings.buttons_shadow_vertical_offset }}px;
+        --buttons-shadow-blur-radius: {{ settings.buttons_shadow_blur }}px;
+        --buttons-border-offset: {% if settings.buttons_radius > 0 or settings.buttons_shadow_opacity > 0 %}0.3{% else %}0{% endif %}px;
+
+        --inputs-radius: {{ settings.inputs_radius }}px;
+        --inputs-border-width: {{ settings.inputs_border_thickness }}px;
+        --inputs-border-opacity: {{ settings.inputs_border_opacity | divided_by: 100.0 }};
+        --inputs-shadow-opacity: {{ settings.inputs_shadow_opacity | divided_by: 100.0 }};
+        --inputs-shadow-horizontal-offset: {{ settings.inputs_shadow_horizontal_offset }}px;
+        --inputs-margin-offset: {% if settings.inputs_shadow_vertical_offset != 0 and settings.inputs_shadow_opacity > 0 %}{{ settings.inputs_shadow_vertical_offset | abs }}{% else %}0{% endif %}px;
+        --inputs-shadow-vertical-offset: {{ settings.inputs_shadow_vertical_offset }}px;
+        --inputs-shadow-blur-radius: {{ settings.inputs_shadow_blur }}px;
+        --inputs-radius-outset: {% if settings.inputs_radius > 0 %}{{ settings.inputs_radius | plus: settings.inputs_border_thickness }}{% else %}0{% endif %}px;
+
+        --variant-pills-radius: {{ settings.variant_pills_radius }}px;
+        --variant-pills-border-width: {{ settings.variant_pills_border_thickness }}px;
+        --variant-pills-border-opacity: {{ settings.variant_pills_border_opacity | divided_by: 100.0 }};
+        --variant-pills-shadow-opacity: {{ settings.variant_pills_shadow_opacity | divided_by: 100.0 }};
+        --variant-pills-shadow-horizontal-offset: {{ settings.variant_pills_shadow_horizontal_offset }}px;
+        --variant-pills-shadow-vertical-offset: {{ settings.variant_pills_shadow_vertical_offset }}px;
+        --variant-pills-shadow-blur-radius: {{ settings.variant_pills_shadow_blur }}px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: inherit;
+      }
+
+      html {
+        box-sizing: border-box;
+        font-size: calc(var(--font-body-scale) * 62.5%);
+        height: 100%;
+      }
+
+      body {
+        display: grid;
+        grid-template-rows: auto auto 1fr auto;
+        grid-template-columns: 100%;
+        min-height: 100%;
+        margin: 0;
+        font-size: 1.5rem;
+        letter-spacing: 0.06rem;
+        line-height: calc(1 + 0.8 / var(--font-body-scale));
+        font-family: var(--font-body-family);
+        font-style: var(--font-body-style);
+        font-weight: var(--font-body-weight);
+      }
+
+      @media screen and (min-width: 750px) {
+        body {
+          font-size: 1.6rem;
+        }
+      }
+    {% endstyle %}
+
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+
+    {{ 'custom.css' | asset_url | stylesheet_tag }}
+    <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
+
+    {%- if settings.cart_type == 'drawer' -%}
+      {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
+      {{ 'component-cart.css' | asset_url | stylesheet_tag }}
+      {{ 'component-totals.css' | asset_url | stylesheet_tag }}
+      {{ 'component-price.css' | asset_url | stylesheet_tag }}
+      {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
+
+    {%- unless settings.type_body_font.system? -%}
+      {% comment %}theme-check-disable AssetPreload{% endcomment %}
+      <link rel="preload" as="font" href="{{ settings.type_body_font | font_url }}" type="font/woff2" crossorigin>
+      {% comment %}theme-check-enable AssetPreload{% endcomment %}
+    {%- endunless -%}
+    {%- unless settings.type_header_font.system? -%}
+      {% comment %}theme-check-disable AssetPreload{% endcomment %}
+      <link rel="preload" as="font" href="{{ settings.type_header_font | font_url }}" type="font/woff2" crossorigin>
+      {% comment %}theme-check-enable AssetPreload{% endcomment %}
+    {%- endunless -%}
+
+    {%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
+      {{ 'component-localization-form.css' | asset_url | stylesheet_tag: preload: true }}
+      <script src="{{ 'localization-form.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+
+    {%- if settings.predictive_search_enabled -%}
+      <link
+        rel="stylesheet"
+        href="{{ 'component-predictive-search.css' | asset_url }}"
+        media="print"
+        onload="this.media='all'"
+      >
+    {%- endif -%}
+
+    <script>
+      if (Shopify.designMode) {
+        document.documentElement.classList.add('shopify-design-mode');
+      }
+    </script>
+  </head>
+
+  {% if template.name == 'product' %}
+    {% if product.metafields.custom.choose_fabrics.value %}
+      {% assign fabric_jsons = product.metafields.custom.choose_fabrics.value %}
+      <div class="fabric_json">
+        {% for fabric_json in fabric_jsons %}
+          <div class="popup_design metafield-rich_text_field popup_{{ forloop.index }}">
+            <div class="close_popup">x</div>
+            {% assign richtext = fabric_json.description.value %}
+            {% if richtext %}
+              {{ fabric_json.description | metafield_tag }}
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <body class="gradient {{ template.name }}  {% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
+    <a class="skip-to-content-link button visually-hidden" href="#MainContent">
+      {{ 'accessibility.skip_to_text' | t }}
+    </a>
+
+    {%- if settings.cart_type == 'drawer' -%}
+      {%- render 'cart-drawer' -%}
+    {%- endif -%}
+
+    {% sections 'header-group' %}
+    {% comment %} {%- render 'color-swatch' -%} {% endcomment %}
+
+    <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+
+    <ul hidden>
+      <li id="a11y-refresh-page-message">{{ 'accessibility.refresh_page' | t }}</li>
+      <li id="a11y-new-window-message">{{ 'accessibility.link_messages.new_window' | t }}</li>
+    </ul>
+
+    <script>
+      window.shopUrl = '{{ request.origin }}';
+      window.routes = {
+        cart_add_url: '{{ routes.cart_add_url }}',
+        cart_change_url: '{{ routes.cart_change_url }}',
+        cart_update_url: '{{ routes.cart_update_url }}',
+        cart_url: '{{ routes.cart_url }}',
+        predictive_search_url: '{{ routes.predictive_search_url }}',
+      };
+
+      window.cartStrings = {
+        error: `{{ 'sections.cart.cart_error' | t }}`,
+        quantityError: `{{ 'sections.cart.cart_quantity_error_html' | t: quantity: '[quantity]' }}`,
+      };
+
+      window.variantStrings = {
+        addToCart: `{{ 'products.product.add_to_cart' | t }}`,
+        soldOut: `{{ 'products.product.sold_out' | t }}`,
+        unavailable: `{{ 'products.product.unavailable' | t }}`,
+        unavailable_with_option: `{{ 'products.product.value_unavailable' | t: option_value: '[value]' }}`,
+      };
+
+      window.quickOrderListStrings = {
+        itemsAdded: `{{ 'sections.quick_order_list.items_added.other' | t: quantity: '[quantity]' }}`,
+        itemAdded: `{{ 'sections.quick_order_list.items_added.one' | t: quantity: '[quantity]' }}`,
+        itemsRemoved: `{{ 'sections.quick_order_list.items_removed.other' | t: quantity: '[quantity]' }}`,
+        itemRemoved: `{{ 'sections.quick_order_list.items_removed.one' | t: quantity: '[quantity]' }}`,
+        viewCart: `{{- 'sections.quick_order_list.view_cart' | t -}}`,
+        each: `{{- 'sections.quick_order_list.each' | t: money: '[money]' }}`,
+        min_error: `{{- 'sections.quick_order_list.min_error' | t: min: '[min]' }}`,
+        max_error: `{{- 'sections.quick_order_list.max_error' | t: max: '[max]' }}`,
+        step_error: `{{- 'sections.quick_order_list.step_error' | t: step: '[step]' }}`,
+      };
+
+      window.accessibilityStrings = {
+        imageAvailable: `{{ 'products.product.media.image_available' | t: index: '[index]' }}`,
+        shareSuccess: `{{ 'general.share.success_message' | t }}`,
+        pauseSlideshow: `{{ 'sections.slideshow.pause_slideshow' | t }}`,
+        playSlideshow: `{{ 'sections.slideshow.play_slideshow' | t }}`,
+        recipientFormExpanded: `{{ 'recipient.form.expanded' | t }}`,
+        recipientFormCollapsed: `{{ 'recipient.form.collapsed' | t }}`,
+        countrySelectorSearchCount: `{{ 'localization.country_results_count' | t: count: '[count]' }}`,
+      };
+    </script>
+
+    {%- if settings.predictive_search_enabled -%}
+      <script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+
+    {%- if settings.cart_type == 'drawer' -%}
+      <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const intervalId = setInterval(() => {
+          const widget = document.querySelector('.widget-visible');
+          if (widget) {
+            widget.style.setProperty('z-index', '1', 'important'); // ← Add !important
+            clearInterval(intervalId);
+          }
+        }, 300);
+
+        setTimeout(() => clearInterval(intervalId), 5000);
+      });
+    </script>
+    <script>
+  document.addEventListener("DOMContentLoaded", function () {
+
+
+
+
+
+      document.querySelectorAll('.thumb_media').forEach(img => {
+        img.addEventListener('click', () => {
+          const target = document.querySelector('.dimensions');
+          if (target) {
+            // Smooth scroll into view
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Trigger click after scroll delay only if aria-expanded != true
+            setTimeout(() => {
+              if (target.getAttribute('aria-expanded') !== 'true') {
+                target.click();
+              }
+            }, 600); // adjust delay if needed
+          }
+        });
+      });
+
+
+      document.querySelectorAll('.chart-img').forEach(img => {
+        img.addEventListener('click', () => {
+          const target = document.querySelector('.dimensions');
+          if (target) {
+            // Smooth scroll into view
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Trigger click after scroll delay only if aria-expanded != true
+            setTimeout(() => {
+              if (target.getAttribute('aria-expanded') !== 'true') {
+                target.click();
+              }
+            }, 600); // adjust delay if needed
+          }
+        });
+      });
+
+
+
+
+      document.addEventListener('mouseover', function (e) {
+        if (!e.target.classList.contains('swatch')) return;
+
+        const label = e.target.closest('.swatch-input__label');
+        if (!label) return;
+
+        const variantImage = label.getAttribute('data-variant_image');
+        if (!variantImage) return;
+
+        const productCard = label.closest('.product-card-wrapper');
+        if (!productCard) return;
+
+        const productImg = productCard.querySelector('.card__media img');
+        if (!productImg) return;
+
+        // Only change srcset (leave src untouched)
+        productImg.srcset = variantImage;
+      });
+
+      document.addEventListener('mouseout', function (e) {
+        if (!e.target.classList.contains('swatch')) return;
+
+        const label = e.target.closest('.swatch-input__label');
+        if (!label) return;
+
+        const productCard = label.closest('.product-card-wrapper');
+        if (!productCard) return;
+
+        const productImg = productCard.querySelector('.card__media img');
+        if (!productImg) return;
+
+        // Reset srcset to match current src
+        productImg.srcset = productImg.src;
+      });
+    {% comment %} if (document.querySelector('.product__media-list')) {
+    const carousel = document.querySelector('.product__media-list');
+    const prevBtn = carousel.querySelector('.gallery-button--prev');
+    const nextBtn = carousel.querySelector('.gallery-button--next');
+
+    const hideArrows = () => {
+      prevBtn.style.opacity = '0';
+      prevBtn.style.pointerEvents = 'none';
+      prevBtn.style.left = ''; // reset
+      prevBtn.style.top = '';
+
+      nextBtn.style.opacity = '0';
+      nextBtn.style.pointerEvents = 'none';
+      nextBtn.style.left = '';
+      nextBtn.style.top = '';
+    };
+
+    // Show arrows only while inside
+    carousel.addEventListener('mousemove', (e) => {
+      const rect = carousel.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      if (x < 0 || y < 0 || x > rect.width || y > rect.height) {
+        hideArrows();
+        return;
+      }
+
+      if (x < rect.width / 2) {
+        // Hovering left side — show prev
+        prevBtn.style.opacity = '1';
+        prevBtn.style.pointerEvents = 'auto';
+        prevBtn.style.left = `${x}px`;
+        prevBtn.style.top = `${y}px`;
+
+        nextBtn.style.opacity = '0';
+        nextBtn.style.pointerEvents = 'none';
+      } else {
+        // Hovering right side — show next
+        nextBtn.style.opacity = '1';
+        nextBtn.style.pointerEvents = 'auto';
+        nextBtn.style.left = `${x}px`;
+        nextBtn.style.top = `${y}px`;
+
+        prevBtn.style.opacity = '0';
+        prevBtn.style.pointerEvents = 'none';
+      }
+    });
+
+    // Hide arrows when mouse leaves the carousel
+    carousel.addEventListener('mouseleave', hideArrows);
+
+    // Also hide if dragging outside
+    document.addEventListener('mouseup', hideArrows);
+    document.addEventListener('dragend', hideArrows);
+
+    // Handle click on carousel
+    carousel.addEventListener('click', (e) => {
+      const rect = carousel.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+
+      if (x < rect.width / 2) {
+        // Clicked left side — trigger prev button
+        if (!prevBtn.classList.contains('swiper-button-disabled')) {
+          prevBtn.click();
+        }
+      } else {
+        // Clicked right side — trigger next button
+        if (!nextBtn.classList.contains('swiper-button-disabled')) {
+          nextBtn.click();
+        }
+      }
+    });
+
+    // Hide initially
+    {% comment %} hideArrows(); {% endcomment %}
+    }   {% endcomment %}
+
+
+
+
+
+var swiper = new Swiper('.brand-slider', {
+  slidesPerView: 2, // mobile default
+  spaceBetween: 20,
+  loop: true,
+  pagination: {
+    el: '.swiper-pagination',
+    clickable: true,
+    dynamicBullets: true,
+    dynamicMainBullets: 2
+  },
+  breakpoints: {
+    600: {
+      slidesPerView: 2, // tablet
+    },
+    768: {
+      slidesPerView: 5, // desktop
+    },
+    1000: {
+      slidesPerView: 6, // desktop
+    }
+  }
+});
+
+
+
+  });
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    (function($){ 
+      $.fn.simpleGallery = function(options){
+        const $gallery = this;
+        let images = $gallery.find('img.image-magnify-none').map((i, el) => $(el).attr('src')).get();
+        let currentIndex = 0, scale = 1;
+
+        // Modal HTML
+        const modalHtml = `
+          <div class="sg-modal-overlay" tabindex="-1">
+            <div class="sg-modal-content" tabindex="0">
+              <button class="sg-control sg-close" title="Close">&times;</button>
+            
+              <button class="sg-control sg-prev" title="Previous">&#8592;</button>
+              <button class="sg-control sg-next" title="Next">&#8594;</button>
+              <div class="sg-modal-img-wrapper-main">
+                <button class="sg-control sg-zoom-in" title="Zoom In"><span>+</span></button>
+                {% comment %} <button class="sg-control sg-zoom-out" title="Zoom Out"><span>&#8722;</span></button> {% endcomment %}
+              
+              <div class="sg-modal-img-wrapper">
+             
+                <img class="sg-modal-img" draggable="false" />
+              </div>
+              </div>
+            </div>
+          </div>
+        `;
+        const $modal = $(modalHtml).appendTo('body');
+        const $img = $modal.find('.sg-modal-img');
+        const $wrapper = $modal.find('.sg-modal-img-wrapper');
+        let dragging = false, lastX = 0, lastY = 0, scrollLeft = 0, scrollTop = 0;
+
+        // Helper to apply correct zoom/size
+        function setZoomStyles() {
+          if (scale === 1) {
+            $img.css({
+              'transform': 'scale(1)',
+              'max-width': '100%',
+              'max-height': '100%'
+            });
+            $('.sg-zoom-in').show();
+          } else {
+            $img.css({
+              'transform': `scale(${scale})`,
+              'max-width': 'none',
+              'max-height': 'none'
+            });
+          }
+        }
+
+        function showModal(idx){
+          currentIndex = idx;
+          scale = 1;
+          $img.attr('src', images[idx]);
+          setZoomStyles();
+          $modal.addClass('active');
+          $wrapper.scrollTop(0).scrollLeft(0);
+          setTimeout(() => $modal.find('.sg-modal-content').focus(), 10);
+        }
+        function closeModal(){
+          $modal.removeClass('active');
+          dragging = false;
+        }
+        function updateImage(){
+          $img.attr('src', images[currentIndex]);
+          scale = 1;
+          setZoomStyles();
+          $wrapper.scrollTop(0).scrollLeft(0);
+        }
+        function zoomIn(){
+          scale = Math.min(scale + 0.25, 5);
+          $('.sg-zoom-out').hide();
+          $('.sg-zoom-in').hide();
+          setZoomStyles();
+        }
+        function zoomOut(){
+          scale = Math.max(scale - 0.25, 1);
+          setZoomStyles();
+          if (scale === 1) {
+            $wrapper.scrollTop(0).scrollLeft(0);
+          }
+        }
+        function prevImg(){
+          currentIndex = (currentIndex - 1 + images.length) % images.length;
+          updateImage();
+        }
+        function nextImg(){
+          currentIndex = (currentIndex + 1) % images.length;
+          updateImage();
+        }
+
+        // Open modal on thumbnail click
+         $('#openZoomBtn').on('click', function(e){
+          
+          const idx = images.indexOf($('.product__media-list .is-active img').attr('src'));
+          showModal(idx);
+        });
+
+        const imageWrapper = document.querySelector('.sg-modal-img-wrapper-main');
+        const plusIcon = imageWrapper.querySelector('.sg-zoom-in');
+
+
+        imageWrapper.addEventListener('mousemove', (e) => {
+          const rect = imageWrapper.getBoundingClientRect();
+          
+          // Calculate mouse position relative to imageWrapper top-left corner
+          let x = e.clientX - rect.left;
+          let y = e.clientY - rect.top;
+          
+          // Optional: constrain x and y so icon doesn't overflow outside image bounds
+          const iconSize = 50; // size of plus icon in px
+          x = Math.min(Math.max(iconSize / 2, x), rect.width - iconSize / 2);
+          y = Math.min(Math.max(iconSize / 2, y), rect.height - iconSize / 2);
+          
+          // Move plus icon to mouse position
+          plusIcon.style.left = `${x}px`;
+          plusIcon.style.top = `${y}px`;
+          plusIcon.style.transform = 'translate(-50%, -50%)'; // center icon on pointer
+        });
+
+
+        // Controls
+        $modal.on('click', '.sg-close', closeModal);
+        $modal.on('click', '.sg-zoom-in', zoomIn);
+        $modal.on('click', '.sg-zoom-out', zoomOut);
+        $modal.on('click', '.sg-prev', prevImg);
+        $modal.on('click', '.sg-next', nextImg);
+
+        // Keyboard navigation
+        $modal.on('keydown', function(e){
+          if (!$modal.hasClass('active')) return;
+          if (e.key === "Escape") closeModal();
+          else if (e.key === "ArrowLeft") prevImg();
+          else if (e.key === "ArrowRight") nextImg();
+          else if (e.key === "+" || e.key === "=") zoomIn();
+          else if (e.key === "-" || e.key === "_") zoomOut();
+        });
+
+        // Click outside image to close
+        $modal.on('click', function(e){
+          if (e.target === this) closeModal();
+        });
+
+        // Drag to pan (now works in ALL directions after zoom)
+        $img.on('mousedown', function(e){
+          if (scale === 1) return;
+          dragging = true;
+          lastX = e.pageX;
+          lastY = e.pageY;
+          scrollLeft = $wrapper.scrollLeft();
+          scrollTop = $wrapper.scrollTop();
+          e.preventDefault();
+          $img.css('cursor', 'grabbing');
+        });
+        $(document).on('mousemove', function(e){
+          if (dragging){
+            const dx = e.pageX - lastX;
+            const dy = e.pageY - lastY;
+            $wrapper.scrollLeft(scrollLeft - dx);
+            $wrapper.scrollTop(scrollTop - dy);
+          }
+        }).on('mouseup', function(){
+          if (dragging) {
+            dragging = false;
+            $img.css('cursor', 'grab');
+          }
+        });
+
+        // Prevent unwanted image selection/dragging
+        $img.on('dragstart', () => false);
+
+        // Mousewheel to zoom
+        $img.on('wheel', function(e){
+          if (e.originalEvent.deltaY < 0) zoomIn();
+          else zoomOut();
+          return false;
+        });
+
+        return this;
+      };
+
+      // Auto-init on #gallery
+      $(function() {
+          $('.product__media-list').simpleGallery();
+      });
+
+    })(jQuery);
+
+
+
+   {% comment %} const openBtn = document.getElementById('openZoomBtn');
+
+    openBtn.addEventListener('click', function () {
+      const firstLink = document.querySelector('.product__media-list .is-active a');
+      
+      if (firstLink && typeof firstLink.click === 'function') {
+        firstLink.click(); // Trigger Lightbox
+      } else {
+        console.error('Lightbox link not found or click() not supported.');
+      }
+    }); {% endcomment %}
+
+    if(document.querySelectorAll(".click_note")){
+      const overlay = document.createElement("div");
+      overlay.classList.add("popup-overlay");
+      document.body.appendChild(overlay);
+
+      // Click notes
+      document.querySelectorAll(".click_note").forEach(note => {
+        note.addEventListener("click", function () {
+          const popupClass = this.id.replace("popup_", "popup_");
+          const popup = document.querySelector("." + popupClass);
+
+          if (popup) {
+            popup.classList.add("popup-active");
+            overlay.classList.add("active");
+          }
+        });
+      });
+
+      // Close popup when clicking overlay
+      overlay.addEventListener("click", function () {
+        document.querySelectorAll(".popup_design").forEach(p => {
+          p.classList.remove("popup-active");
+        });
+        overlay.classList.remove("active");
+      });
+
+
+      document.querySelectorAll(".close_popup").forEach(btn => {
+        btn.addEventListener("click", function () {
+          // Find the closest popup wrapper
+          const popup = this.closest(".popup_design");
+          if (popup) {
+            popup.classList.remove("popup-active");
+          }
+
+          // If you still want to remove overlay
+          const overlay = document.querySelector(".popup-overlay");
+          if (overlay) {
+            overlay.classList.remove("active");
+          }
+        });
+      });
+
+
+    }
+  });
+    </script>
+
+    <div id="scrollRoundBtn" class="scroll-round-btn" aria-label="Scroll progress / go top">
+      <svg class="progress-ring" width="80" height="80" viewBox="0 0 80 80" aria-hidden="true">
+        <circle class="progress-ring__circle" r="34" cx="40" cy="40" />
+      </svg>
+      <span class="round-inner" aria-hidden="true">
+        <svg width="10" height="38" viewBox="0 0 10 20" fill="#ff4a1c" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 7.21593L5 0L0 7.21186L4.33333 4.275V38H5.66667V4.275L10 7.21593Z" fill="#ff4a1c"/>
+        </svg>
+      </span>
+      <!-- arrow can be replaced with an icon -->
+    </div>
+
+  <script>
+(function () {
+  const btn = document.getElementById('scrollRoundBtn');
+  const circle = btn.querySelector('.progress-ring__circle');
+  const radius = circle.r.baseVal.value;
+  const circumference = 2 * Math.PI * radius;
+  const body = document.body;
+
+  // Setup circle stroke
+  circle.style.strokeDasharray = `${circumference} ${circumference}`;
+  circle.style.strokeDashoffset = circumference;
+
+  function setProgress(percent) {
+    percent = Math.min(Math.max(percent, 0), 100);
+    const offset = circumference - (percent / 100) * circumference;
+    circle.style.strokeDashoffset = offset;
+  }
+
+  // Update progress based on body scroll
+  function updateOnScroll() {
+    const scrollTop = body.scrollTop;
+    const docHeight = body.scrollHeight - body.clientHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    setProgress(pct);
+  }
+
+  // Smooth scroll-to-top
+  function goToTopAndMove() {
+    btn.classList.add('pressed');
+    setTimeout(() => btn.classList.remove('pressed'), 220);
+
+    btn.classList.add('to-top');
+
+    // Smooth scroll using body
+    if ('scrollBehavior' in document.documentElement.style) {
+      body.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // fallback
+      let start = body.scrollTop;
+      let step = start / 15;
+      let t = setInterval(function () {
+        start -= step;
+        if (start <= 0) {
+          body.scrollTo(0, 0);
+          clearInterval(t);
+        } else {
+          body.scrollTo(0, Math.round(start));
+        }
+      }, 16);
+    }
+  }
+
+  // Click action
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    goToTopAndMove();
+  });
+
+  // Initial update
+  updateOnScroll();
+
+  // SCROLL LISTENER ON BODY (IMPORTANT)
+  body.addEventListener('scroll', updateOnScroll, { passive: true });
+
+  // Resize listener (may not be needed but safe)
+  window.addEventListener('resize', updateOnScroll);
+
+  // Scroll end detection
+  let scrollTimer = null;
+  body.addEventListener(
+    'scroll',
+    function () {
+      if (scrollTimer) clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function () {
+        updateOnScroll();
+        if (body.scrollTop === 0) {
+          btn.classList.add('to-top');
+        }
+      }, 120);
+    },
+    { passive: true }
+  );
+
+})();
+</script>
+
+  </body>
+</html>

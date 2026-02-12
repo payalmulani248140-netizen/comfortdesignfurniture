@@ -1,0 +1,71 @@
+{%- unless media.id == product.selected_or_first_available_variant.featured_media.id -%}
+            {%- liquid
+              capture media_index
+                if media.media_type == 'model'
+                  increment model_index
+                elsif media.media_type == 'video' or media.media_type == 'external_video'
+                  increment video_index
+                elsif media.media_type == 'image'
+                  increment image_index
+                endif
+              endcapture
+              assign media_index = media_index | plus: 1
+            -%}
+{{ media_index }}
+            <li
+              id="Slide-Thumbnails-{{ section.id }}-{{ forloop.index }}"
+              class="{%  if forloop.index  == 3 %}thumb_media{% endif %} thumbnail-list__item slider__slide{% if section.settings.hide_variants and variant_images contains media.src %} thumbnail-list_item--variant{% endif %}"
+              data-target="{{ section.id }}-{{ media.id }}"
+              data-media-position="{{ forloop.index }}"
+            >
+                {%- if media.media_type == 'model' -%}
+                  <span class="thumbnail__badge" aria-hidden="true">
+                    <span class="svg-wrapper">
+                      {{- 'icon-3d-model.svg' | inline_asset_content -}}
+                    </span>
+                  </span>
+                {%- elsif media.media_type == 'video' or media.media_type == 'external_video' -%}
+                  <span class="thumbnail__badge" aria-hidden="true">
+                    <span class="svg-wrapper">
+                      {{- 'icon-play.svg' | inline_asset_content -}}
+                    </span>
+                  </span>
+                {%- endif -%}
+                {%- capture thumbnail_id -%}
+                  Thumbnail-{{ section.id }}-{{ forloop.index }}
+                {%- endcapture -%}
+                <button
+                  class="thumbnail global-media-settings global-media-settings--no-shadow"
+                  aria-label="{%- if media.media_type == 'image' -%}{{ 'products.product.media.load_image' | t: index: media_index }}{%- elsif media.media_type == 'model' -%}{{ 'products.product.media.load_model' | t: index: media_index }}{%- elsif media.media_type == 'video' or media.media_type == 'external_video' -%}{{ 'products.product.media.load_video' | t: index: media_index }}{%- endif -%}"
+                  {% if media == product.selected_or_first_available_variant.featured_media
+                    or product.selected_or_first_available_variant.featured_media == null
+                    and forloop.index == 1
+                  %}
+                    aria-current="true"
+                  {% endif %}
+                  aria-controls="GalleryViewer-{{ section.id }}"
+                  aria-describedby="{{ thumbnail_id }}"
+                >
+
+
+                    {%  if media_index == 3 %}
+                <div class="chart-img-thumb">
+                  <img src="https://cdn.shopify.com/s/files/1/0924/4016/6685/files/chart.png?v=1758185563&width=50">
+                </div>
+              {% endif %}
+                  {{
+                    media.preview_image
+                    | image_url: width: 416
+                    | image_tag:
+                      loading: 'lazy',
+                      sizes: sizes,
+                      widths: '54, 74, 104, 162, 208, 324, 416',
+                      id: thumbnail_id,
+                      alt: media.alt
+                    | escape
+                  }}
+                </button>
+            </li>
+
+
+          {%- endunless -%}

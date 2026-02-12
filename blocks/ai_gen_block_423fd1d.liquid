@@ -1,0 +1,277 @@
+{% doc %}
+  @prompt
+    Add custom CSS specifically for collection pages to hide sale badges using display none for classes like .badge, .sale-badge, .product-badge, .badge--sale, .product-form__cart-submit[data-sale], and any element containing text Sale while keeping price displays intact
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-badge-hider-{{ ai_gen_id }} {
+    display: block;
+    padding: 20px;
+    background-color: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    text-align: center;
+  }
+
+  .ai-badge-hider-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 10px;
+    font-weight: 600;
+  }
+
+  .ai-badge-hider-description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.description_size }}px;
+    color: {{ block.settings.text_color }};
+    opacity: 0.8;
+    margin: 0;
+  }
+
+  {% if block.settings.enable_collection_pages %}
+    body.template-collection .badge,
+    body.template-collection .sale-badge,
+    body.template-collection .product-badge,
+    body.template-collection .badge--sale,
+    body.template-collection .product-form__cart-submit[data-sale],
+    body.template-collection [class*="badge"][class*="sale"],
+    body.template-collection [class*="sale"][class*="badge"],
+    body.template-collection .product-badge--sale,
+    body.template-collection .card-badge,
+    body.template-collection .product-card-badge {
+      display: none !important;
+    }
+
+    {% if block.settings.hide_sale_text %}
+      body.template-collection *:not(script):not(style) {
+        visibility: visible;
+      }
+      
+      body.template-collection *:not([class*="price"]):not([class*="money"]):not([data-price]):not([id*="price"]) {
+        text-indent: 0;
+      }
+      
+      body.template-collection span:not([class*="price"]):not([class*="money"]):not([data-price]):not([id*="price"]),
+      body.template-collection div:not([class*="price"]):not([class*="money"]):not([data-price]):not([id*="price"]),
+      body.template-collection p:not([class*="price"]):not([class*="money"]):not([data-price]):not([id*="price"]) {
+        font-size: 0;
+      }
+      
+      body.template-collection span:not([class*="price"]):not([class*="money"]):not([data-price]):not([id*="price"])::before,
+      body.template-collection div:not([class*="price"]):not([class*="money"]):not([data-price]):not([id*="price"])::before,
+      body.template-collection p:not([class*="price"]):not([class*="money"]):not([data-price]):not([id*="price"])::before {
+        content: attr(data-original-text);
+        font-size: initial;
+      }
+    {% endif %}
+  {% endif %}
+
+  {% if block.settings.enable_product_pages %}
+    body.template-product .badge,
+    body.template-product .sale-badge,
+    body.template-product .product-badge,
+    body.template-product .badge--sale,
+    body.template-product .product-form__cart-submit[data-sale],
+    body.template-product [class*="badge"][class*="sale"],
+    body.template-product [class*="sale"][class*="badge"],
+    body.template-product .product-badge--sale,
+    body.template-product .card-badge,
+    body.template-product .product-card-badge {
+      display: none !important;
+    }
+  {% endif %}
+
+  {% if block.settings.enable_homepage %}
+    body.template-index .badge,
+    body.template-index .sale-badge,
+    body.template-index .product-badge,
+    body.template-index .badge--sale,
+    body.template-index .product-form__cart-submit[data-sale],
+    body.template-index [class*="badge"][class*="sale"],
+    body.template-index [class*="sale"][class*="badge"],
+    body.template-index .product-badge--sale,
+    body.template-index .card-badge,
+    body.template-index .product-card-badge {
+      display: none !important;
+    }
+  {% endif %}
+
+  {% if block.settings.enable_all_pages %}
+    .badge,
+    .sale-badge,
+    .product-badge,
+    .badge--sale,
+    .product-form__cart-submit[data-sale],
+    [class*="badge"][class*="sale"],
+    [class*="sale"][class*="badge"],
+    .product-badge--sale,
+    .card-badge,
+    .product-card-badge {
+      display: none !important;
+    }
+  {% endif %}
+{% endstyle %}
+
+<div class="ai-badge-hider-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.show_status %}
+    <h3 class="ai-badge-hider-title-{{ ai_gen_id }}">{{ block.settings.title }}</h3>
+    <p class="ai-badge-hider-description-{{ ai_gen_id }}">{{ block.settings.description }}</p>
+  {% endif %}
+</div>
+
+<script>
+(function() {
+  class BadgeHider{{ ai_gen_id }} extends HTMLElement {
+    constructor() {
+      super();
+    }
+
+    connectedCallback() {
+      {% if block.settings.hide_sale_text and block.settings.enable_collection_pages %}
+        this.hideSaleText();
+      {% endif %}
+    }
+
+    hideSaleText() {
+      if (!document.body.classList.contains('template-collection')) return;
+      
+      const elements = document.querySelectorAll('*:not([class*="price"]):not([class*="money"]):not([data-price]):not([id*="price"])');
+      
+      elements.forEach(element => {
+        if (element.children.length === 0 && element.textContent) {
+          const text = element.textContent.trim();
+          const saleRegex = /\b(sale|on sale|save|off|discount|reduced)\b/i;
+          
+          if (saleRegex.test(text)) {
+            element.setAttribute('data-original-text', text.replace(saleRegex, '').trim());
+            element.style.fontSize = '0';
+          }
+        }
+      });
+    }
+  }
+
+  customElements.define('badge-hider-{{ ai_gen_id }}', BadgeHider{{ ai_gen_id }});
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Sale badge hider",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Page targeting"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_collection_pages",
+      "label": "Hide badges on collection pages",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_product_pages",
+      "label": "Hide badges on product pages",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_homepage",
+      "label": "Hide badges on homepage",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_all_pages",
+      "label": "Hide badges on all pages",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Advanced options"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_sale_text",
+      "label": "Hide sale text content",
+      "info": "Attempts to hide text containing 'Sale', 'On Sale', 'Save', etc. while preserving prices",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Display"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_status",
+      "label": "Show status message",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Sale badges hidden"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Sale badges are now hidden on the selected pages while keeping price information visible."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Description size",
+      "default": 14
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sale badge hider"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}

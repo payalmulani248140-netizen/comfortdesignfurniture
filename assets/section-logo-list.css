@@ -1,0 +1,56 @@
+.logo-list__item {
+  padding: 20px;
+  border: 1px solid transparent;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  background-color: #1a1a1a0d;
+}
+@media screen and (min-width: 700px) {
+  .logo-list__item {
+    padding: 25px;
+  }
+}
+@media (max-width: 767px) {
+  .bleed {
+    grid: 1fr / auto-flow 52vw;
+    scroll-padding-inline: calc(
+      ((100vw - 0px) - min((100vw - 0px) - 1.25rem * 2, 1500px)) / 2
+    );
+    margin-inline-start: calc(
+      -1 * (calc(((100vw - 0px) - min((100vw - 0px) - 1.25rem * 2, 1500px)) / 2))
+    );
+    margin-inline-end: calc(
+      -1 * (calc(((100vw - 0px) - min((100vw - 0px) - 1.25rem * 2, 1500px)) / 2))
+    );
+    padding-inline-start: calc(
+      ((100vw - 0px) - min((100vw - 0px) - 1.25rem * 2, 1500px)) / 2
+    );
+    padding-inline-end: calc(
+      ((100vw - 0px) - min((100vw - 0px) - 1.25rem * 2, 1500px)) / 2
+    );
+    display: grid;
+  }
+}
+.logo-list {
+  gap: 0.5rem;
+  display: grid;
+}
+@media screen and (min-width: 768px) {
+  .logo-list {
+    gap: 1.5rem;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 0;
+  }
+}
+@media screen and (min-width: 992px) {
+  .logo-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media screen and (min-width: 1300px) {
+  .logo-list {
+    gap: 2rem;
+    grid-template-columns: repeat(6, 1fr);
+  }
+}

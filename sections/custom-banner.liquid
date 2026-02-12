@@ -1,0 +1,906 @@
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+<section class="luxury-grid-banner page-width section-{{ section.id }}-padding">
+  <div class="luxury-grid">
+    <!-- LEFT LARGE BANNER -->
+    <div class="luxury-left">
+      <div class="luxury-left-inner" style="background-image:url({{ section.settings.left_image | image_url }});">
+        <div class="luxury-overlay"></div>
+        <div class="luxury-content  dynamic-position-btn {{ section.settings.button_position }}">
+
+          {%  if section.settings.badge != blank %}
+          <span class="luxury-badge">{{ section.settings.badge }}</span>
+          {% endif %}
+          {% if section.settings.title != blank %}
+              <h3>{{ section.settings.title }}</h3>
+          {% endif %}
+          {% if section.settings.subtitle != blank %}
+            <p class="custom-paragraph">{{ section.settings.subtitle }}</p>
+          {% endif %}
+              {% if section.settings.button_link != blank %}
+          <div class="luxury-custom-main-btn btn-{{ section.settings.button_type }}">
+            {%  if section.settings.button_label != blank  %}
+            <a href="{{ section.settings.button_link }}" class="luxury-btn">
+              {{ section.settings.button_label }}
+            </a>
+          {% endif %}
+          {%  if section.settings.button_svg %}
+            <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11.5 0.875C17.834 0.875 23 6.04102 23 12.375C23 18.7539 17.834 23.875 11.5 23.875C5.12109 23.875 0 18.7539 0 12.375C0 6.04102 5.12109 0.875 11.5 0.875ZM18.2383 13.4082C18.5977 13.0488 18.6875 12.5996 18.6875 12.375C18.6875 12.1953 18.5977 11.7461 18.1934 11.3418L13.5664 6.71484C13.0273 6.13086 12.084 6.13086 11.5449 6.71484C10.9609 7.25391 10.9609 8.19727 11.5449 8.73633L13.7461 10.9375H5.75C4.94141 10.9375 4.3125 11.6113 4.3125 12.375C4.3125 13.1836 4.94141 13.8125 5.75 13.8125H13.7461L11.5898 16.0137C11.0059 16.5527 11.0059 17.4961 11.5898 18.0352C12.1289 18.6191 13.0723 18.6191 13.6113 18.0352L18.2383 13.4082Z" fill="#ff4b2b"></path>
+          </svg>
+            {%endif %}
+          </div>
+                        {% endif %}
+
+        </div>
+
+        <!-- Seamless marquee -->
+        {% comment %} <div class="luxury-marquee">
+          <div class="luxury-marquee-bg"></div>
+          <div class="luxury-marquee-track">
+            <div class="marquee-inner">
+              {{ section.settings.marquee_text }}
+              <span class="luxury-dot"></span> {{ section.settings.marquee_text }}
+              <span class="luxury-dot"></span> {{ section.settings.marquee_text }}
+              <span class="luxury-dot"></span> {{ section.settings.marquee_text }}
+            </div>
+            <div class="marquee-inner">
+              {{ section.settings.marquee_text }}
+              <span class="luxury-dot"></span> {{ section.settings.marquee_text }}
+              <span class="luxury-dot"></span> {{ section.settings.marquee_text }}
+              <span class="luxury-dot"></span> {{ section.settings.marquee_text }}
+            </div>
+          </div>
+        </div> {% endcomment %}
+      </div>
+    </div>
+    <!-- MIDDLE VIDEO WITH POSTER -->
+    <div class="luxury-middle">
+      <div class="video-wrapper">
+        {% if section.settings.video_poster != blank %}
+          {% comment %} <img src="{{ section.settings.video_poster | image_url }}" class="video-poster" alt="Video Poster"> {% endcomment %}
+        {% endif %}
+        {% if section.settings.video != blank %}
+          {{ section.settings.video | video_tag: autoplay: true, loop: true, muted: true, controls: false }}
+        {% endif %}
+        {% comment %} <div class="gradient-overlay"></div> {% endcomment %}
+        {% comment %} <div class="play-button" id="playButton">
+          <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M54.1081 65.9576C48.825 69.1579 42.6278 71 36 71C16.6702 71 1 55.3299 1 36C1 16.6701 16.6702 1 36 1C55.3299 1 71 16.6701 71 36C71 43.1879 68.7839 49.8696 65.0678 55.428M31.3472 48.9438L48.083 39.2325C50.56 37.7951 50.56 34.2048 48.083 32.7675L31.3472 23.0561C28.8686 21.6178 25.7692 23.4139 25.7692 26.2885V45.7113C25.7692 48.5859 28.8686 50.382 31.3472 48.9438Z" stroke="white" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div> {% endcomment %}
+        <div class="luxury-video-caption">{{ section.settings.video_caption }}</div>
+      </div>
+    </div>
+    <!-- MIDDLE BOTTOM IMAGE (UPDATED) -->
+    <div class="luxury-middle-bottom">
+      <div class="luxury-middle-bottom-inner">
+          <a href="{{ section.settings.middle_bottom_link }}" class="luxury-middle-link">
+        {% comment %} <div class="gradient-overlay"></div> {% endcomment %}
+        <div
+          class="bg-image"
+          style="background-image:url({{ section.settings.middle_bottom_image | image_url }});"
+        ></div>
+        {% comment %} <div class="middle-bottom-content">
+          {% if section.settings.middle_bottom_logo != blank %}
+            <img src="{{ section.settings.middle_bottom_logo | image_url }}" alt="Logo" class="middle-bottom-logo">
+          {% endif %}
+          {% if section.settings.middle_bottom_title != blank %}
+            <h4 class="middle-bottom-title">{{ section.settings.middle_bottom_title }}</h4>
+          {% endif %}
+          <div class="middle-sub-bottom-arrow">
+            {% if section.settings.middle_bottom_arrow != blank %}
+              <img src="{{ section.settings.middle_bottom_arrow | image_url }}" class="luxury-arrow-img" alt="Arrow">
+            {% endif %}
+          </div>
+        </div> {% endcomment %}
+
+
+
+<div class=" dynamic-position-btn {{ section.settings.button_position_middle }}">
+
+          {% if section.settings.title1 != blank %}
+              <h3>{{ section.settings.title1 }}</h3>
+          {% endif %}
+
+              {% if section.settings.middle_bottom_link != blank %}
+
+          <a href="{{ section.settings.middle_bottom_link }}" class="luxury-small luxury-custom-main-btn btn-{{ section.settings.button_type }}">
+           
+              {% if section.settings.button_text_middle != blank %}
+               <span>   {{ section.settings.button_text_middle }}  </span>
+              {% endif %}
+ {%  if section.settings.button_svg %}
+           <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11.5 0.875C17.834 0.875 23 6.04102 23 12.375C23 18.7539 17.834 23.875 11.5 23.875C5.12109 23.875 0 18.7539 0 12.375C0 6.04102 5.12109 0.875 11.5 0.875ZM18.2383 13.4082C18.5977 13.0488 18.6875 12.5996 18.6875 12.375C18.6875 12.1953 18.5977 11.7461 18.1934 11.3418L13.5664 6.71484C13.0273 6.13086 12.084 6.13086 11.5449 6.71484C10.9609 7.25391 10.9609 8.19727 11.5449 8.73633L13.7461 10.9375H5.75C4.94141 10.9375 4.3125 11.6113 4.3125 12.375C4.3125 13.1836 4.94141 13.8125 5.75 13.8125H13.7461L11.5898 16.0137C11.0059 16.5527 11.0059 17.4961 11.5898 18.0352C12.1289 18.6191 13.0723 18.6191 13.6113 18.0352L18.2383 13.4082Z" fill="#ff4b2b"></path>
+          </svg>
+            {%endif %}
+          </a>
+              {% endif %}
+      </div>
+
+      </a>
+      </div>
+    </div>
+    <!-- RIGHT GRID IMAGES (UPDATED subtitle replaced with image) -->
+    <div class="luxury-right">
+      {% for block in section.blocks %}
+        <div class="luxury-small-box">
+          <div class="luxury-small-img">
+            {% comment %} <div class="gradient-overlay"></div> {% endcomment %}
+            <div class="bg-image" style="background-image:url({{ block.settings.image | image_url }});"></div>
+            <div class="luxury-small-content">
+
+
+              <div class="small-content dynamic-position-btn {{ block.settings.button_position }}">
+                {% if block.settings.title != blank %}
+                  <h3>{{ block.settings.title }}</h3>
+                {% endif %}
+                  {% if block.settings.link != blank %}
+                <a href="{{ block.settings.link }}" class="luxury-small luxury-custom-main-btn btn-{{ section.settings.button_type }}">
+                  {% if block.settings.button_text != blank %}
+                   <span>   {{ block.settings.button_text }}  </span>
+                  {% endif %}
+               {%  if section.settings.button_svg %}
+         <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11.5 0.875C17.834 0.875 23 6.04102 23 12.375C23 18.7539 17.834 23.875 11.5 23.875C5.12109 23.875 0 18.7539 0 12.375C0 6.04102 5.12109 0.875 11.5 0.875ZM18.2383 13.4082C18.5977 13.0488 18.6875 12.5996 18.6875 12.375C18.6875 12.1953 18.5977 11.7461 18.1934 11.3418L13.5664 6.71484C13.0273 6.13086 12.084 6.13086 11.5449 6.71484C10.9609 7.25391 10.9609 8.19727 11.5449 8.73633L13.7461 10.9375H5.75C4.94141 10.9375 4.3125 11.6113 4.3125 12.375C4.3125 13.1836 4.94141 13.8125 5.75 13.8125H13.7461L11.5898 16.0137C11.0059 16.5527 11.0059 17.4961 11.5898 18.0352C12.1289 18.6191 13.0723 18.6191 13.6113 18.0352L18.2383 13.4082Z" fill="#ff4b2b"></path>
+          </svg>
+            {%endif %}
+                </a>
+                  {% endif %}
+
+                </div>
+
+                {% comment %} <div class="luxury-text-top">
+                  {% if block.settings.logo_image != blank %}
+                    <img src="{{ block.settings.logo_image | image_url }}" alt="Logo" class="right-logo-img">
+                  {% endif %} 
+                  <h4 class="middle-bottom-title">{{ block.settings.title }}</h4>
+                </div>
+                {% if block.settings.arrow_image != blank %}
+                  <img src="{{ block.settings.arrow_image | image_url }}" class="luxury-arrow-img" alt="Arrow">
+                {% endif %} {% endcomment %}
+
+
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .btn-solid {
+    background: #ff4b2b;
+    padding: 0px 15px;
+    height: 35px !important;
+  }
+  .custom_grid_banner{
+    background: #fff;
+  }
+  .custom-paragraph{
+    color: #000;
+    font-size: 14px;
+    font-family: 'Helvetica';
+  }
+  .luxury-grid-banner {
+    width: 100%;
+    overflow: hidden;
+  }
+  .luxury-grid {
+    display: grid;
+    grid-template-columns: calc(50% - 17px) calc(25% - 17px) calc(25% - 17px);
+    grid-template-rows: repeat(2, 1fr);
+    column-gap: 10px;
+    {% comment %} height: 80vh; {% endcomment %}
+  }
+
+  /* LEFT SIDE */
+  .luxury-left {
+    grid-row: 1 / 4;
+    position: relative;
+  }
+  .luxury-left-inner {
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    border-radius: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  .luxury-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+  }
+  .luxury-content {
+    position: absolute;
+    width: 100%;
+    margin: 0 auto;
+    color: #fff;
+    z-index: 3;
+    text-align: left;
+    padding: 0 60px;
+  }
+  .luxury-badge {
+    background: #ffffff;
+    color: #000;
+    padding: 5px 15px;
+    font-size: 14px;
+    border-radius: 50px;
+    display: inline-block;
+    margin-bottom: 10px;
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+      font-family: 'Helvetica';
+  }
+  .luxury-content h2{
+    font-weight: 700;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+    font-family: 'Helvetica';
+    color: #000;
+    font-size: 50px;
+    margin: 30px 0;
+  }
+  .luxury-btn {
+    display: inline-block;
+    color: #fff;
+    border-radius: 30px;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  .luxury-marquee {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+    overflow: hidden;
+    color: #fff;
+    z-index: 2;
+  }
+  .luxury-marquee-bg {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1;
+  }
+  .luxury-marquee-track {
+    display: flex;
+    white-space: nowrap;
+    animation: scrollLeft 20s linear infinite;
+    z-index: 2;
+  }
+  .marquee-inner {
+    display: inline-flex;
+    align-items: center;
+    padding-right: 50px;
+    background: #0000004D;
+    padding: 8px;
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+
+  }
+  .luxury-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #FFA070;
+    border-radius: 50%;
+    margin: 0 15px;
+  }
+  @keyframes scrollLeft {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  /* MIDDLE VIDEO */
+  .luxury-middle {
+    grid-row: 1 / 2;
+    border-radius: 30px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .luxury-custom-main-btn  a {
+    color: #fff;
+  }
+
+  a.luxury-small.luxury-custom-main-btn {
+    color: #fff;
+    font-size: 16px;
+  }
+  .luxury-custom-main-btn{
+    {% comment %} background: #ff4b2b; {% endcomment %}
+    max-width: fit-content;
+    padding: 8px 10px;
+    line-height: 1;
+    border-radius: 50px;
+    gap: 14px;
+    align-items: center;
+    width: auto;
+    display: flex;
+    height: 20px;
+  }
+  .luxury-custom-main-btn svg {
+    width: 22px;
+  }
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .video-wrapper video,
+  .video-wrapper .video-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 30px;
+  }
+  .video-wrapper .gradient-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to left, rgba(255,160,112,0.75), rgba(255,160,112,0.35) 60%, transparent 100%);
+    z-index: 2;
+  }
+  .play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    width: 80px;
+    height: 80px;
+    z-index: 3;
+    transition: opacity 0.3s ease;
+  }
+  .play-button:hover { opacity: 0.8; }
+  .luxury-video-caption {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 8px;
+    z-index: 4;
+    width: 100%;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  /* MIDDLE BOTTOM */
+  .luxury-middle-bottom {
+    position: relative;
+    border-radius: 30px;
+    overflow: hidden;
+  }
+  .luxury-middle-bottom-inner {
+    position: relative;
+    height: 100%;
+  }
+  .luxury-middle-bottom-inner .bg-image {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+  }
+  .luxury-middle-bottom-inner .gradient-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to left, rgba(255,160,112,0.75), rgba(255,160,112,0.35) 60%, transparent 100%);
+    z-index: 2;
+  }
+  .middle-bottom-content{
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    width: 100%;
+    max-width: fit-content;
+    text-align: end;
+  }
+  .middle-sub-bottom-arrow{
+    position: absolute;
+    right: 0px;
+    bottom: -90px;
+    width: 100%;
+    max-width: fit-content;
+    text-align: end;
+  }
+  .middle-sub-bottom-arrow img{
+      position: relative;
+    z-index: 50;
+  }
+  .middle-bottom-content img{
+    position: relative;
+    z-index: 50;
+  }
+  .middle-bottom-content h4{
+    position: relative;
+    z-index: 50;
+  }
+  .luxury-arrow-img{
+    width: 56px !important;
+    height: 15px !important;
+    align-self: flex-end !important;
+  }
+  .middle-bottom-title{
+    font-size: 18px;
+    line-height: 1;
+    letter-spacing: 2px;
+    font-weight: 700;
+    font-family: 'Helvetica';
+    color: #000;
+    margin: 10px 0;
+    }
+  /* RIGHT SIDE */
+  .luxury-right {
+    grid-row: 1 / 4;
+    display: grid;
+    gap: 10px;
+  }
+  .luxury-small-box {
+    position: relative;
+    border-radius: 30px;
+    overflow: hidden;
+  }
+  .luxury-small-img {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  .luxury-small-img .bg-image {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+  }
+  .luxury-small-img .gradient-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to left, rgba(255,160,112,0.75), rgba(255,160,112,0.35) 60%, transparent 100%);
+    z-index: 2;
+  }
+  .luxury-small-content {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 30px 30px 15px 15px;
+}
+  .luxury-text-top {
+    text-align: right;
+  }
+  .luxury-text-top span {
+    font-size: 12px;
+    display: block;
+  }
+  .gradient-overlay{
+      display: block !important;
+  }
+  .bg-image{
+    display: block !important;
+  }
+  .luxury-small-content .luxury-arrow-img{
+    margin-bottom: 25px;
+  }
+
+
+  /* Button positon */
+  .luxury-left .luxury-content.dynamic-position-btn.bottom-right {
+    height: 100%;
+    left: 150px;
+    max-width: 125px;
+    margin: 0;
+    padding: 0;
+  }
+  .luxury-left .luxury-custom-main-btn.btn-solid {
+    margin-left: 0;
+    top: 61%;
+    position: absolute;
+    left: 0;
+    right: 0;
+  }
+  .luxury-middle-bottom a.luxury-small.luxury-custom-main-btn {
+    font-size: 12px;
+    margin-top: 60px;
+    margin-left: 5px;
+    padding: 5px 10px;
+    height: 25px !important;
+  }
+  .luxury-small-box:nth-child(2) .dynamic-position-btn.center-left {
+    left: 30px;
+  }
+  .luxury-right a.luxury-small.luxury-custom-main-btn {
+    font-size: 12px;
+    margin-top: 85px;
+    margin-left: 20px;
+    padding: 5px 10px;
+    height: 25px !important;
+  }
+  /* Button positon */
+
+
+  /* --- RESPONSIVE STYLES --- */
+
+/* Large tablets (≤1200px) */
+@media (max-width: 1280px) {
+  .luxury-left .luxury-content.dynamic-position-btn.bottom-right {
+    left: 90px;
+  }
+  .luxury-middle-bottom a.luxury-small.luxury-custom-main-btn{
+    margin-left: 0px;
+  }
+  .luxury-right a.luxury-small.luxury-custom-main-btn{
+    margin-left: 0;
+  }
+}
+@media (max-width: 1200px) {
+
+  {% comment %} .luxury-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    height: auto;
+  }
+  .luxury-left {
+    grid-column: 1 / 3;
+    grid-row: auto;
+    height: 70vh;
+  }
+  .luxury-middle {
+    grid-column: 1 / 2;
+    grid-row: auto;
+    height: 40vh;
+  }
+  .luxury-middle-bottom {
+    grid-column: 2 / 3;
+    grid-row: auto;
+    height: 40vh;
+  }
+  .luxury-right {
+    grid-column: 1 / 3;
+    grid-row: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  } {% endcomment %}
+  .luxury-content h2 {
+    font-size: 38px;
+  }
+  .middle-bottom-title {
+    font-size: 20px;
+  }
+}
+
+/* Tablets (≤992px) */
+@media (max-width: 992px) {
+.luxury-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    height: auto;
+  }
+  .luxury-left {
+    grid-column: 1 / 3;
+    grid-row: auto;
+    height: 70vh;
+  }
+  .luxury-middle {
+    grid-column: 1 / 2;
+    grid-row: auto;
+    height: 40vh;
+  }
+  .luxury-middle-bottom {
+    grid-column: 2 / 3;
+    grid-row: auto;
+    height: 40vh;
+  }
+  .luxury-right {
+    grid-column: 1 / 3;
+    grid-row: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  } 
+  .luxury-grid {
+    gap: 15px;
+    height: auto;
+  }
+  .luxury-left,
+  .luxury-middle,
+  .luxury-middle-bottom,
+  .luxury-right {
+    height: auto;
+  }
+  .luxury-left-inner,
+  .luxury-small-box,
+  .luxury-middle-bottom-inner {
+    border-radius: 20px;
+  }
+  .luxury-content h2 {
+    font-size: 34px;
+  }
+  .luxury-custom-main-btn {
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+  .luxury-video-caption {
+    font-size: 18px;
+  }
+  .luxury-right {
+    grid-template-columns: 1fr 1fr;
+  }
+  .luxury-left-inner{
+    padding-top: 100%
+  }
+
+  /* Button */
+  .luxury-left .luxury-content.dynamic-position-btn.bottom-right {
+    left: 160px;
+    max-width: 150px;
+  }
+  .luxury-middle-bottom a.luxury-small.luxury-custom-main-btn {
+    margin-left: 35px;
+  }
+  /* Button */
+
+}
+
+/* Mobile (≤768px) */
+@media (max-width: 768px) {
+  .luxury-right {
+  display: none;
+}
+  .luxury-content h2 {
+    font-size: 26px;
+    line-height: 1.2;
+  }
+  .luxury-badge {
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+  .luxury-custom-main-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+  .luxury-right {
+    grid-template-columns: 1fr;
+  }
+  .luxury-small-box {
+    height: 220px;
+  }
+  .luxury-middle{
+    margin-bottom: 0;
+  }
+  .luxury-middle-bottom-inner {
+    {% comment %} height: 250px; {% endcomment %}
+  }
+  .luxury-video-caption {
+    font-size: 16px;
+  }
+  .middle-bottom-title {
+    font-size: 18px;
+  }
+  .luxury-middle,.video-wrapper video, .video-wrapper .video-poster,.luxury-middle-bottom{
+    border-radius: 10px;
+  }
+  .luxury-grid-banner{
+    padding-top: 10px !important;
+  }
+  /* Button */
+  .luxury-left .luxury-content.dynamic-position-btn.bottom-right {
+    left: 40px;
+    max-width: 100px;
+  }
+  .luxury-left .luxury-custom-main-btn.btn-solid .luxury-btn {
+    font-size: 12px;
+  }
+  .luxury-left .luxury-custom-main-btn.btn-solid {
+    height: 25px !important;
+    top: 65%;
+  }
+  .luxury-middle-bottom a.luxury-small.luxury-custom-main-btn {
+    margin-left: -13px;
+    font-size: 10px;
+  }
+  /* Button */
+
+}
+
+/* Very small devices (≤480px) */
+@media (max-width: 480px) {
+  .luxury-content h2 {
+    font-size: 22px;
+  }
+  .luxury-badge {
+    font-size: 11px;
+  }
+  .luxury-custom-main-btn {
+    flex-direction: row;
+    gap: 8px;
+  }
+  .luxury-marquee {
+    bottom: 15px;
+  }
+  .luxury-video-caption {
+    font-size: 14px;
+  }
+  .middle-bottom-title {
+    font-size: 16px;
+  }
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const video = document.querySelector('.video-wrapper video');
+    const playButton = document.getElementById('playButton');
+    const poster = document.querySelector('.video-poster');
+    const gradientOverlay = document.querySelector('.video-wrapper .gradient-overlay');
+
+    if (video && playButton && poster) {
+      playButton.addEventListener('click', () => {
+        poster.style.display = 'none';
+        playButton.style.display = 'none';
+        if (gradientOverlay) gradientOverlay.style.opacity = '0';
+        video.play();
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Custom Grid Banner",
+  "class": "custom_grid_banner",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id":"button_svg",
+      "label":"Enable Button SVG"
+    },
+    {
+      "type": "select",
+      "id": "button_type",
+      "label": "Select Option",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "normal", "label": "Normal Text" },
+      ],
+      "default": "solid"
+    },
+    { "type": "image_picker", "id": "left_image", "label": "Left Banner Image" },
+    { "type": "text", "id": "badge", "label": "Badge Text", "default": "Premium Collection" },
+    { "type": "html", "id": "title", "label": "Title", "default": "Luxury Redefined" },
+    { "type": "text", "id": "subtitle", "label": "Description"},
+    {
+          "type": "select",
+          "id": "button_position",
+          "label": "Button Position",
+          "options": [
+              { "value": "top-left", "label": "Top Left" },
+              { "value": "top-center", "label": "Top Center" },
+              { "value": "top-right", "label": "Top Right" },
+              { "value": "center-left", "label": "Center Left" },
+              { "value": "center-center", "label": "Center Center" },
+              { "value": "center-right", "label": "Center Right" },
+              { "value": "bottom-left", "label": "Bottom Left" },
+              { "value": "bottom-center", "label": "Bottom Center" },
+              { "value": "bottom-right", "label": "Bottom Right" }
+            ],
+              "default": "bottom-right"
+    },
+    { "type": "text", "id": "button_label", "label": "Button Label", "default": "Shop Now" },
+    { "type": "url", "id": "button_link", "label": "Button Link" },
+    {
+      "type": "html",
+      "id": "marquee_text",
+      "label": "Marquee Text",
+      "default": "Premium Materials • White Glove Delivery • Rich Palette of Fabrics"
+    },
+    { "type": "image_picker", "id": "video_poster", "label": "Video Poster Image" },
+    { "type": "video", "id": "video", "label": "Middle Column Video" },
+    { "type": "text", "id": "video_caption", "label": "Video Caption", "default": "Fjords Nordic Sleeper Sofa" },
+    { "type": "image_picker", "id": "middle_bottom_image", "label": "Middle Bottom Image" },
+    { "type": "image_picker", "id": "middle_bottom_logo", "label": "Middle Bottom Logo Image" },
+    {
+      "type": "text",
+      "id": "middle_bottom_title",
+      "label": "Middle Bottom Title",
+      "default": "Discover the Collection"
+    },
+    { "type": "image_picker", "id": "middle_bottom_arrow", "label": "Middle Bottom Arrow Image" },
+            {
+          "type": "select",
+          "id": "button_position_middle",
+          "label": "Button Position",
+          "options": [
+              { "value": "top-left", "label": "Top Left" },
+              { "value": "top-center", "label": "Top Center" },
+              { "value": "top-right", "label": "Top Right" },
+              { "value": "center-left", "label": "Center Left" },
+              { "value": "center-center", "label": "Center Center" },
+              { "value": "center-right", "label": "Center Right" },
+              { "value": "bottom-left", "label": "Bottom Left" },
+              { "value": "bottom-center", "label": "Bottom Center" },
+              { "value": "bottom-right", "label": "Bottom Right" }
+            ],
+              "default": "bottom-right"
+    },
+    { "type": "html", "id": "title1", "label": "Middle Title", "default": "Luxury Redefined" },
+    { "type": "text", "id": "button_text_middle", "label": "Button Text"},
+    { "type": "url", "id": "middle_bottom_link", "label": "Middle Bottom Link" },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image_block",
+      "name": "Right Side Image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Background Image" },
+        { "type": "html", "id": "title", "label": "Title", "default": "Luxury Redefined" },
+        {
+          "type": "select",
+          "id": "button_position",
+          "label": "Button Position",
+          "options": [
+              { "value": "top-left", "label": "Top Left" },
+              { "value": "top-center", "label": "Top Center" },
+              { "value": "top-right", "label": "Top Right" },
+              { "value": "center-left", "label": "Center Left" },
+              { "value": "center-center", "label": "Center Center" },
+              { "value": "center-right", "label": "Center Right" },
+              { "value": "bottom-left", "label": "Bottom Left" },
+              { "value": "bottom-center", "label": "Bottom Center" },
+              { "value": "bottom-right", "label": "Bottom Right" }
+            ],
+              "default": "bottom-right"
+        }, 
+        { "type": "text", "id": "button_text", "label": "Button Text"},
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [{ "name": "Custom Grid Banner", "category": "Banner" }]
+}
+{% endschema %}
